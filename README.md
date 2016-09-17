@@ -1,7 +1,7 @@
 # HFG
 TL;DR Project files for the Haptic Feedback HMI Glove Capstone project
 
-
+-------------------------------------------------------------------------------
 
 Academic Information:
 
@@ -15,7 +15,7 @@ Course Code: Proctech 4TR3
 
 Instructor: Tom Wanyama
 
-
+-------------------------------------------------------------------------------
 
 Team Members:
 
