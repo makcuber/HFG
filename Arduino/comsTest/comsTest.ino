@@ -30,31 +30,71 @@ int startMotorPin = 22;
 bool motorState[maxMotors];
 int btMode = 0;
 int usbMode = 0;
-bool btVerbose=false;
+bool motorChangeVerbose=false;
+bool btVerbose = false;
+bool verboseEnabled[maxComms];
+bool commState[maxComms];
 
 //Serial variables
 String cmdS;
 String valS;
 int mode = 1;
 
-void clusterfuck(){
-  Serial.println("Gabe made me write this function");
+void clusterfuck() {
+  verboseMsg("Gabe made me write this function");
 }
 
 void setup() {
   //put your setup code here, to run once:
-  //configure motors pins for each motor
-  for (int i = 0; i < maxMotors; i++) {
-    //set motor pin number
-    motorPin[i]=startMotorPin+i;
-    //set pinmode for pin
-    pinMode(motorPin[i], OUTPUT);
-    //set starting motor state
-    setMotorState(i,false);
-  }
+
+  //enable serial communications
   Serial.begin(9600);
   Serial1.begin(9600);
-  clusterfuck();
+
+  //set comm port states
+  commState[0] = Serial.available();
+  commState[1] = Serial1.available();
+  commState[2] = Serial2.available();
+  commState[3] = Serial3.available();
+
+  verboseEnabled[0] = true;
+
+  verboseMsg("Serial Communications Established");
+  verboseMsg("---------------------------------");
+  verboseMsg("CommPort\t|Status\t|Verbose");
+  verboseMsg("---------------------------------");
+  for (int i = 0; i < maxComms; i++) {
+    verboseMsg("Comm#" + String(i) + "\t\t|" + String(commState[i])+ "\t|" + String(verboseEnabled[i]));
+  }
+  verboseMsg("---------------------------------");
+  verboseMsg("");
+
+  verboseMsg("Initializing System");
+  verboseMsg("-------------------");
+
+  //configure motors pins for each motor
+  verboseMsg("Configuring motor pins...");
+  verboseMsg("-----------------------------------");
+  verboseMsg("Loop#\t|motorPin\t|motorState");
+  verboseMsg("-----------------------------------");
+  
+  for (int i = 0; i < maxMotors; i++) {
+
+    //set motor pin number
+    motorPin[i] = startMotorPin + i;
+
+    //set pinmode for pin
+    pinMode(motorPin[i], OUTPUT);
+
+    //set starting motor state
+    setMotorState(i, false);
+    
+    verboseMsg(String(i)+"\t|" + String(motorPin[i]) + "\t\t|" + String(motorState[i]));
+  }
+  verboseMsg("-----------------------------------");
+  motorChangeVerbose=true;
+  verboseMsg("Initialization COMPLETE\n");
+  //clusterfuck();
 }
 
 void loop() {
@@ -64,20 +104,40 @@ void loop() {
   btComm();
 }
 
-String SerialRead(int comm){
-  switch(comm){
+String SerialRead(int comm) {
+  switch (comm) {
     case 0:
+      return "";
       break;
     case 1:
-      String     
-      return Serial1.read();
+      return Serial1.readStringUntil('\n');
       break;
     case 2:
+      return "";
       break;
     case 3:
+      return "";
       break;
     default:
       return "";
+      break;
+  }
+}
+void SerialWrite(int comm, String msg) {
+  switch (comm) {
+    case 0:
+      Serial.println(msg);
+      break;
+    case 1:
+      Serial1.println(msg);
+      break;
+    case 2:
+      Serial2.println(msg);
+      break;
+    case 3:
+      Serial3.println(msg);
+      break;
+    default:
       break;
   }
 }
@@ -85,24 +145,24 @@ String SerialRead(int comm){
 void cmdSort(int mode, String cmdS, String valS) {
   switch (mode) {
     case 0:
-      //Serial.println("commMode#0");
+      //verboseMsg("commMode#0");
       usbcmd(cmdS, valS);
       break;
     case 1:
-      //Serial.println("commMode#1");
+      //verboseMsg("commMode#1");
       btcmd(cmdS, valS);
       break;
     case 2:
-      Serial.println("commMode#2");
+      //verboseMsg("commMode#2");
       break;
     case 3:
-      Serial.println("commMode#3");
+      //verboseMsg("commMode#3");
       break;
     case 4:
-      Serial.println("commMode#4");
+      //verboseMsg("commMode#4");
       break;
     case 5:
-      Serial.println("commMode#5");
+      //verboseMsg("commMode#5");
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
@@ -115,7 +175,7 @@ void btComm() {
     cmdS = Serial1.readStringUntil(',');
     valS = Serial1.readStringUntil('\n');
   }
-  
+
   cmdSort(btMode, cmdS, valS);
 
   //reset the cmd and val variables for the next cycle
@@ -128,27 +188,28 @@ void btcmd(String cmdS, String valS) {
   //int val = valS.toInt();
   switch (cmd) {
     case 0:
+      verboseMsg("BT cmd#0");
       showHelp(btMode);
       break;
     case 1:
-      Serial.println("cmd#1");
+      verboseMsg("BT cmd#1");
       break;
     case 2:
-      Serial.println("cmd#2");
+      verboseMsg("BT cmd#2");
       break;
     case 3:
-      Serial.println("cmd#3");
+      verboseMsg("BT cmd#3");
       break;
     case 4:
-      Serial.println("cmd#4");
+      verboseMsg("BT cmd#4");
       break;
     case 5:
-      Serial.println("cmd#5");
+      verboseMsg("BT cmd#5");
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
-      if(btVerbose){
-          
+      if (btVerbose) {
+
       }
       break;
   }
@@ -169,28 +230,30 @@ void usbComm() {
 
 void usbcmd(String cmdS, String valS) {
   int cmd = cmdS.toInt();
-  //int val = valS.toInt();
+  int val = valS.toInt();
   switch (cmd) {
     case 0:
+      verboseMsg("USB cmd#0");
       showHelp(usbMode);
       break;
     case 1:
-      //Serial.println("cmd#1");
+      verboseMsg("USB cmd#1");
       setMotorState(0, false);
       break;
     case 2:
-      //Serial.println("cmd#2");
+      verboseMsg("USB cmd#2");
       toggleMotor(0);
       break;
     case 3:
-      //Serial.println("cmd#3");
+      verboseMsg("USB cmd#3");
       setBTverbose(true);
       break;
     case 4:
-      Serial.println("cmd#4");
+      verboseMsg("USB cmd#4");
+      digitalWrite(motorPin[val], HIGH);
       break;
     case 5:
-      Serial.println("cmd#5");
+      verboseMsg("USB cmd#5");
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
@@ -198,12 +261,24 @@ void usbcmd(String cmdS, String valS) {
   }
 }
 
-void setBTverbose(bool state){
-  btVerbose=state;
+void verboseMsg(String msg) {
+  if (verboseEnabled[0]) {
+    Serial.println(msg);
+  }
+  if (verboseEnabled[1]) {
+    Serial1.println(msg);
+  }
+  if (verboseEnabled[2]) {
+    Serial.println(msg);
+  }
 }
 
-void comm2Comm(String cmd, int commA, int commB){
-  
+void setBTverbose(bool state) {
+  btVerbose = state;
+}
+
+void comm2Comm(String cmd, int commA, int commB) {
+
 }
 
 void toggleMotor(int motorID) {
@@ -218,22 +293,29 @@ void setMotorState(int motorID, bool state) {
     motorState[motorID] = false;
     digitalWrite(motorPin[motorID], LOW);
   }
+  if (motorChangeVerbose) {
+    verboseMsg("Motor State Change");
+    verboseMsg("------------------");
+    verboseMsg("MotorPin:" + String(motorPin[motorID]));
+    verboseMsg("MotorState:" + String(motorState[motorID]));
+    verboseMsg("\n");
+  }
 }
 
 void showHelp(int m) {
-  Serial.println("------------------");
-  Serial.println("Help");
-  Serial.println("------------------");
+  verboseMsg("------------------");
+  verboseMsg("Help");
+  verboseMsg("------------------");
   switch (m) {
     case 0:
-      Serial.println("1 = Stop Motor");
-      Serial.println("2 = Toggle Motor State");
-      //Serial.println("3 = cmd#3");
-      //Serial.println("4 = cmd#4");
-      //Serial.println("5 = cmd#5");
+      verboseMsg("1 = Stop Motor");
+      verboseMsg("2 = Toggle Motor State");
+      verboseMsg("3 = Set BT verbose");
+      verboseMsg("4 = Turn on motor x");
+      //verboseMsg("5 = cmd#5");
       break;
     default:
       break;
   }
-  Serial.println("------------------");
+  verboseMsg("------------------");
 }
