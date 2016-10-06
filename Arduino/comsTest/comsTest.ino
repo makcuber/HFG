@@ -30,7 +30,8 @@ int startMotorPin = 22;
 bool motorState[maxMotors];
 int btMode = 0;
 int usbMode = 0;
-bool motorChangeVerbose=false;
+int clearNum = 50;
+bool motorChangeVerbose = false;
 bool btVerbose = false;
 bool verboseEnabled[maxComms];
 bool commState[maxComms];
@@ -43,8 +44,10 @@ int mode = 1;
 void clusterfuck() {
   verboseMsg("Gabe made me write this function");
 }
-
 void setup() {
+  boot();
+}
+void boot() {
   //put your setup code here, to run once:
 
   //enable serial communications
@@ -64,7 +67,7 @@ void setup() {
   verboseMsg("CommPort\t|Status\t|Verbose");
   verboseMsg("---------------------------------");
   for (int i = 0; i < maxComms; i++) {
-    verboseMsg("Comm#" + String(i) + "\t\t|" + String(commState[i])+ "\t|" + String(verboseEnabled[i]));
+    verboseMsg("Comm#" + String(i) + "\t\t|" + String(commState[i]) + "\t|" + String(verboseEnabled[i]));
   }
   verboseMsg("---------------------------------");
   verboseMsg("");
@@ -77,7 +80,7 @@ void setup() {
   verboseMsg("-----------------------------------");
   verboseMsg("Loop#\t|motorPin\t|motorState");
   verboseMsg("-----------------------------------");
-  
+  motorChangeVerbose = false;
   for (int i = 0; i < maxMotors; i++) {
 
     //set motor pin number
@@ -88,12 +91,13 @@ void setup() {
 
     //set starting motor state
     setMotorState(i, false);
-    
-    verboseMsg(String(i)+"\t|" + String(motorPin[i]) + "\t\t|" + String(motorState[i]));
+
+    verboseMsg(String(i) + "\t|" + String(motorPin[i]) + "\t\t|" + String(motorState[i]));
   }
   verboseMsg("-----------------------------------");
-  motorChangeVerbose=true;
+  motorChangeVerbose = true;
   verboseMsg("Initialization COMPLETE\n");
+
   //clusterfuck();
 }
 
@@ -238,7 +242,7 @@ void usbcmd(String cmdS, String valS) {
       break;
     case 1:
       verboseMsg("USB cmd#1");
-      setMotorState(0, false);
+      killAll();
       break;
     case 2:
       verboseMsg("USB cmd#2");
@@ -250,10 +254,15 @@ void usbcmd(String cmdS, String valS) {
       break;
     case 4:
       verboseMsg("USB cmd#4");
-      digitalWrite(motorPin[val], HIGH);
+      setMotorState(val, true);
       break;
     case 5:
       verboseMsg("USB cmd#5");
+      clearConsole();
+      break;
+    case 6:
+      verboseMsg("USB cmd#6");
+      boot();
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
@@ -285,6 +294,18 @@ void toggleMotor(int motorID) {
   setMotorState(motorID, !motorState[motorID]);
 }
 
+void killAll() {
+  motorChangeVerbose = false;
+  for (int i = 0; i < maxMotors; i++) {
+    setMotorState(i, false);
+  }
+  verboseMsg("Motor State Change");
+  verboseMsg("------------------");
+  verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[maxMotors-1]));
+  verboseMsg("MotorState:" + String(motorState[0]));
+  motorChangeVerbose = true;
+}
+
 void setMotorState(int motorID, bool state) {
   if (state) {
     motorState[motorID] = true;
@@ -299,6 +320,12 @@ void setMotorState(int motorID, bool state) {
     verboseMsg("MotorPin:" + String(motorPin[motorID]));
     verboseMsg("MotorState:" + String(motorState[motorID]));
     verboseMsg("\n");
+  }
+}
+
+void clearConsole() {
+  for (int i = 0; i < clearNum; i++) {
+    verboseMsg("");
   }
 }
 
