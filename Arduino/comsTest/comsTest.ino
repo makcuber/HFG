@@ -30,7 +30,7 @@ int startMotorPin = 22;
 bool motorState[maxMotors];
 int btMode = 0;
 int usbMode = 0;
-char runMode='b';
+char runMode = 'n';
 int clearNum = 50;
 bool motorChangeVerbose = false;
 bool btVerbose = false;
@@ -43,6 +43,7 @@ String valS;
 int mode = 1;
 int commBaud[maxComms];
 bool btEnabled = true;
+int baudRates[]={300,1200,2400,4800,9600,19200};
 
 void clusterfuck() {
   verboseMsg("Gabe made me write this function");
@@ -79,7 +80,8 @@ void boot() {
 
   //set comm port states
 
-  verboseEnabled[0] = true;
+  verboseEnabled[0] = false;
+  verboseEnabled[1] = true;
 
   verboseMsg("Serial Communications Established");
   verboseMsg("---------------------------------");
@@ -129,12 +131,13 @@ void loop() {
       break;
     default:
       //USB Communication
-      usbComm();
+      //usbComm();
       //Bluetooth Communication
       //btComm();
       //push Bluetooth communications to USB communications
       if (btEnabled) {
-        comm2Comm(1, 0, 's');
+        //comm2Comm(1, 0, 's');
+        bluetoothRead();
       }
       break;
   }
@@ -142,19 +145,25 @@ void loop() {
 
 //Bluetooth Run Mode
 
-void bluetooth() {
+void bluetooth(){
+  bluetoothRead();
+  bluetoothWrite(Serial.readString());
+}
+void bluetoothRead() {
   // Read device output if available.
   if (Serial1.available()) {
     cmdS = Serial1.readString();
 
-    Serial.println(cmdS);
+    //Serial.println(cmdS);
+    cmdSort(btMode, cmdS, "");
     cmdS = ""; // No repeats
   }
-
+}
+void bluetoothWrite(String msg){
   // Read user input if available.
   if (Serial.available()) {
     //delay(10); // The delay is necessary to get this working!
-    Serial1.write(Serial.read());
+    Serial1.println(msg);
   }
 }
 
@@ -392,7 +401,7 @@ void usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseMsg("USB cmd#7");
-      SerialWriteS(1, valS);
+      bluetoothWrite(valS);
       break;
 
     default:
