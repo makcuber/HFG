@@ -30,6 +30,7 @@ int startMotorPin = 22;
 bool motorState[maxMotors];
 int btMode = 0;
 int usbMode = 0;
+char runMode='b';
 int clearNum = 50;
 bool motorChangeVerbose = false;
 bool btVerbose = false;
@@ -40,25 +41,43 @@ bool commState[maxComms];
 String cmdS;
 String valS;
 int mode = 1;
+int commBaud[maxComms];
+bool btEnabled = true;
 
 void clusterfuck() {
   verboseMsg("Gabe made me write this function");
 }
+
+//BOOTUP
+
 void setup() {
-  boot();
+  switch (runMode) {
+    case 'b':
+      btBoot();
+      break;
+    default:
+      boot();
+      break;
+  }
+}
+void btBoot() {
+  // Open serial communications:
+  Serial.begin(9600);
+  Serial.println("Type AT commands!");
+
+  // The HC-06 defaults to 9600 according to the datasheet.
+  Serial1.begin(9600);
+
 }
 void boot() {
   //put your setup code here, to run once:
 
   //enable serial communications
-  Serial.begin(9600);
-  Serial1.begin(9600);
+  setAllCommBaud(9600);
+  connectComm(0);
+  connectComm(1);
 
   //set comm port states
-  commState[0] = Serial.available();
-  commState[1] = Serial1.available();
-  commState[2] = Serial2.available();
-  commState[3] = Serial3.available();
 
   verboseEnabled[0] = true;
 
@@ -101,48 +120,155 @@ void boot() {
   //clusterfuck();
 }
 
-void loop() {
-  //USB Communication
-  usbComm();
-  //Bluetooth Communication
-  btComm();
-}
+//MAIN
 
-String SerialRead(int comm) {
-  switch (comm) {
-    case 0:
-      return "";
-      break;
-    case 1:
-      return Serial1.readStringUntil('\n');
-      break;
-    case 2:
-      return "";
-      break;
-    case 3:
-      return "";
+void loop() {
+  switch (runMode) {
+    case 'b':
+      bluetooth();
       break;
     default:
-      return "";
+      //USB Communication
+      usbComm();
+      //Bluetooth Communication
+      //btComm();
+      //push Bluetooth communications to USB communications
+      if (btEnabled) {
+        comm2Comm(1, 0, 's');
+      }
       break;
   }
 }
-void SerialWrite(int comm, String msg) {
-  switch (comm) {
-    case 0:
-      Serial.println(msg);
+
+//Bluetooth Run Mode
+
+void bluetooth() {
+  // Read device output if available.
+  if (Serial1.available()) {
+    cmdS = Serial1.readString();
+
+    Serial.println(cmdS);
+    cmdS = ""; // No repeats
+  }
+
+  // Read user input if available.
+  if (Serial.available()) {
+    //delay(10); // The delay is necessary to get this working!
+    Serial1.write(Serial.read());
+  }
+}
+
+//Default Run Mode
+
+void comm2Comm(int commA, int commB, char mode) {
+  String tmpS;
+  int tmpI;
+  switch (mode) {
+    case 's':
+      SerialWriteS(commB, SerialReadS(commA));
       break;
-    case 1:
-      Serial1.println(msg);
-      break;
-    case 2:
-      Serial2.println(msg);
-      break;
-    case 3:
-      Serial3.println(msg);
+    case 'b':
+      tmpI = SerialReadB(commA);
+      delay(10);
+      SerialWriteB(commB, tmpI);
       break;
     default:
       break;
+  }
+}
+
+int SerialReadB(int comm) {
+  switch (comm) {
+    case 0:
+      if (getCommStatus(comm)) {
+        return Serial.read();
+      }
+      break;
+    case 1:
+      if (getCommStatus(comm)) {
+        return Serial1.read();
+      }
+      break;
+    case 2:
+      if (getCommStatus(comm)) {
+        return Serial2.read();
+      }
+      break;
+    case 3:
+      if (getCommStatus(comm)) {
+        return Serial3.read();
+      }
+      break;
+    default:
+      return -1;
+      break;
+  }
+}
+void SerialWriteB(int comm, int msg) {
+  if (msg != 0) {
+    switch (comm) {
+      case 0:
+        Serial.write(msg);
+        break;
+      case 1:
+        Serial1.write(msg);
+        break;
+      case 2:
+        Serial2.write(msg);
+        break;
+      case 3:
+        Serial3.write(msg);
+        break;
+      default:
+        break;
+    }
+  }
+}
+String SerialReadS(int comm) {
+  switch (comm) {
+    case 0:
+      if (getCommStatus(comm)) {
+        return Serial.readString();
+      }
+      break;
+    case 1:
+      if (getCommStatus(comm)) {
+        return Serial1.readString();
+      }
+      break;
+    case 2:
+      if (getCommStatus(comm)) {
+        return Serial2.readString();
+      }
+      break;
+    case 3:
+      if (getCommStatus(comm)) {
+        return Serial3.readString();
+        break;
+      default:
+        return "";
+        break;
+      }
+  }
+}
+void SerialWriteS(int comm, String msg) {
+  if (msg != "") {
+    switch (comm) {
+      case 0:
+        Serial.println(msg);
+        break;
+      case 1:
+        Serial1.println(msg);
+        break;
+      case 2:
+        Serial2.println(msg);
+        break;
+      case 3:
+        Serial3.println(msg);
+        break;
+      default:
+        break;
+    }
   }
 }
 
@@ -264,6 +390,11 @@ void usbcmd(String cmdS, String valS) {
       verboseMsg("USB cmd#6");
       boot();
       break;
+    case 7:
+      verboseMsg("USB cmd#7");
+      SerialWriteS(1, valS);
+      break;
+
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
       break;
@@ -278,16 +409,15 @@ void verboseMsg(String msg) {
     Serial1.println(msg);
   }
   if (verboseEnabled[2]) {
-    Serial.println(msg);
+    Serial2.println(msg);
+  }
+  if (verboseEnabled[3]) {
+    Serial3.println(msg);
   }
 }
 
 void setBTverbose(bool state) {
   btVerbose = state;
-}
-
-void comm2Comm(String cmd, int commA, int commB) {
-
 }
 
 void toggleMotor(int motorID) {
@@ -301,7 +431,7 @@ void killAll() {
   }
   verboseMsg("Motor State Change");
   verboseMsg("------------------");
-  verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[maxMotors-1]));
+  verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[maxMotors - 1]));
   verboseMsg("MotorState:" + String(motorState[0]));
   motorChangeVerbose = true;
 }
@@ -339,10 +469,103 @@ void showHelp(int m) {
       verboseMsg("2 = Toggle Motor State");
       verboseMsg("3 = Set BT verbose");
       verboseMsg("4 = Turn on motor x");
-      //verboseMsg("5 = cmd#5");
+      verboseMsg("5 = Clear");
+      verboseMsg("6 = Re-Initialize");
       break;
     default:
       break;
   }
   verboseMsg("------------------");
 }
+void reconnectComm(int comm) {
+  disconnectComm(comm);
+  connectComm(comm);
+}
+void connectComm(int comm) {
+  switch (comm) {
+    case 0:
+      Serial.begin(commBaud[0]);
+      commState[0] = Serial.available();
+      break;
+    case 1:
+      Serial1.begin(commBaud[1]);
+      commState[1] = Serial1.available();
+      break;
+    case 2:
+      Serial2.begin(commBaud[2]);
+      commState[2] = Serial2.available();
+      break;
+    case 3:
+      Serial3.begin(commBaud[3]);
+      commState[3] = Serial3.available();
+      break;
+    default:
+      break;
+  }
+}
+bool getCommStatus(int comm) {
+  switch (comm) {
+    case 0:
+      commState[0] = Serial.available();
+      return Serial.available();
+      break;
+    case 1:
+      commState[1] = Serial1.available();
+      return Serial1.available();
+      break;
+    case 2:
+      commState[2] = Serial2.available();
+      return Serial2.available();
+      break;
+    case 3:
+      commState[3] = Serial3.available();
+      return Serial3.available();
+      break;
+    default:
+      return false;
+      break;
+  }
+}
+void disconnectComm(int comm) {
+  switch (comm) {
+    case 0:
+      Serial.end();
+      commState[0] = Serial.available();
+      break;
+    case 1:
+      Serial1.end();
+      commState[1] = Serial1.available();
+      break;
+    case 2:
+      Serial2.end();
+      commState[2] = Serial2.available();
+      break;
+    case 3:
+      Serial3.end();
+      commState[3] = Serial3.available();
+      break;
+    default:
+      break;
+  }
+}
+void setAllCommBaud(int baud) {
+  for (int i = 0; i < maxComms; i++) {
+    commBaud[i] = baud;
+  }
+}
+void reconnectAllComms() {
+  for (int i = 0; i < maxComms; i++) {
+    reconnectComm(i);
+  }
+}
+void connectAllComms() {
+  for (int i = 0; i < maxComms; i++) {
+    connectComm(i);
+  }
+}
+void disconnectAllComms() {
+  for (int i = 0; i < maxComms; i++) {
+    disconnectComm(i);
+  }
+}
+
