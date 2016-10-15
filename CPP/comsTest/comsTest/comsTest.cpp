@@ -133,7 +133,7 @@ void boot() {
 
   //set comm port states
 
-  verboseEnabled[0] = false;
+  verboseEnabled[0] = true;
   verboseEnabled[1] = true;
 
   verboseMsg("Serial Communications Established");
@@ -184,7 +184,7 @@ void loop() {
       break;
     default:
       //USB Communication
-      //usbComm();
+      usbComm();
       //Bluetooth Communication
       //btComm();
       //push Bluetooth communications to USB communications
