@@ -12,6 +12,9 @@
  * DC: 4/10/09/2015
  * UP: 4/29/09/2016
  * UP: 5/30/09/2016
+ * UP: 4/6/10/2016
+ * UP: 5/7/10/2016
+ * UP: 6/15/10/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -31,9 +34,8 @@ bool motorState[maxMotors];
 int btMode = 0;
 int usbMode = 0;
 char runMode = 'n';
-int clearNum = 50;
+int defaultClearWidth = 50;
 bool motorChangeVerbose = false;
-bool btVerbose = false;
 bool verboseEnabled[maxComms];
 bool commState[maxComms];
 
@@ -45,8 +47,13 @@ int commBaud[maxComms];
 bool btEnabled = true;
 int baudRates[]={300,1200,2400,4800,9600,19200};
 
+//Eastereggs
+
 void clusterfuck() {
   verboseMsg("Gabe made me write this function");
+}
+void secret(){
+  //hide something fun here :)
 }
 
 //BOOTUP
@@ -308,7 +315,6 @@ void cmdSort(int mode, String cmdS, String valS) {
       break;
   }
 }
-
 void btComm() {
   while (Serial1.available()) {
     cmdS = Serial1.readStringUntil(',');
@@ -321,14 +327,13 @@ void btComm() {
   cmdS = "-1";
   valS = "-1";
 }
-
 void btcmd(String cmdS, String valS) {
   int cmd = cmdS.toInt();
   //int val = valS.toInt();
   switch (cmd) {
     case 0:
       verboseMsg("BT cmd#0");
-      showHelp(btMode);
+      showMenu(btMode);
       break;
     case 1:
       verboseMsg("BT cmd#1");
@@ -347,13 +352,12 @@ void btcmd(String cmdS, String valS) {
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
-      if (btVerbose) {
+      if (verboseEnabled[1]) {
 
       }
       break;
   }
 }
-
 void usbComm() {
   while (Serial.available()) {
     cmdS = Serial.readStringUntil(',');
@@ -366,14 +370,13 @@ void usbComm() {
   cmdS = "-1";
   valS = "-1";
 }
-
 void usbcmd(String cmdS, String valS) {
   int cmd = cmdS.toInt();
   int val = valS.toInt();
   switch (cmd) {
     case 0:
       verboseMsg("USB cmd#0");
-      showHelp(usbMode);
+      showMenu(usbMode);
       break;
     case 1:
       verboseMsg("USB cmd#1");
@@ -385,7 +388,7 @@ void usbcmd(String cmdS, String valS) {
       break;
     case 3:
       verboseMsg("USB cmd#3");
-      setBTverbose(true);
+      setVerbose(true,1);
       break;
     case 4:
       verboseMsg("USB cmd#4");
@@ -410,6 +413,8 @@ void usbcmd(String cmdS, String valS) {
   }
 }
 
+//Verbose
+
 void verboseMsg(String msg) {
   if (verboseEnabled[0]) {
     Serial.println(msg);
@@ -424,15 +429,17 @@ void verboseMsg(String msg) {
     Serial3.println(msg);
   }
 }
-
-void setBTverbose(bool state) {
-  btVerbose = state;
+void setVerbose(bool state, int comm) {
+  if((comm<maxComms)&(comm>0)){
+    verboseEnabled[comm] = state;
+  }
 }
+
+//Motor Control
 
 void toggleMotor(int motorID) {
   setMotorState(motorID, !motorState[motorID]);
 }
-
 void killAll() {
   motorChangeVerbose = false;
   for (int i = 0; i < maxMotors; i++) {
@@ -444,7 +451,6 @@ void killAll() {
   verboseMsg("MotorState:" + String(motorState[0]));
   motorChangeVerbose = true;
 }
-
 void setMotorState(int motorID, bool state) {
   if (state) {
     motorState[motorID] = true;
@@ -462,13 +468,14 @@ void setMotorState(int motorID, bool state) {
   }
 }
 
+//CLI
+
 void clearConsole() {
-  for (int i = 0; i < clearNum; i++) {
+  for (int i = 0; i < defaultClearWidth; i++) {
     verboseMsg("");
   }
 }
-
-void showHelp(int m) {
+void showMenu(int m) {
   verboseMsg("------------------");
   verboseMsg("Help");
   verboseMsg("------------------");
@@ -486,6 +493,9 @@ void showHelp(int m) {
   }
   verboseMsg("------------------");
 }
+
+//Communications
+
 void reconnectComm(int comm) {
   disconnectComm(comm);
   connectComm(comm);
