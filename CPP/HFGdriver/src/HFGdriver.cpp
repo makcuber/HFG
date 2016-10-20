@@ -31,7 +31,6 @@
 #include <CommandControl.h>
 
 //constants - declare values that will remain constant throughout the program here
-const int maxPatternLength = 4;
 
 //values - place global variables here
 char runMode = 'n';

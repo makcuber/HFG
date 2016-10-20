@@ -1,4 +1,4 @@
-//Command Control
+//Pattern Control
 
 /*
  * Credit Format
@@ -11,48 +11,55 @@
  * Ex: Wednesday, July, 1st, 2014 => 3/01/07/2014
  * ---------------
  * Dev: Jonathan Brunath
- * DC: 6/15/10/2016
- * UP: 1/17/10/2016
- * UP: 2/18/10/2016
+ * DC: 3/19/10/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
  * ---------------
 */
 
-#ifndef __CommandControl_H_defined__
-#define __CommandControl_H_defined__
+#ifndef __PatternControl_H_defined__
+#define __PatternControl_H_defined__
 
 #include <Arduino.h>
 #include <VerboseControl.h>
-#include <CommControl.h>
 #include <MotorControl.h>
-#include <BootControl.h>
 
-class CommandControl {
+class PatternControl {
   public:
     //Inherited object
-    CommControl *commControl;
     VerboseControl *verboseControl;
     MotorControl *motorControl;
-    BootControl *bootControl;
 
     //constants - declare values that will remain constant throughout the program here
+    static const int maxPatternLength = 4;
 
     //values - place class variables here
-    int mode;
-
-    int btMode;
-    int usbMode;
+    struct pulse {
+      bool motorIDs[motorControl->maxMotors];
+      int duration;
+      bool state;
+    };
+    struct motorArray{
+      int width,length;
+      bool motorIDs[motorControl->maxMotors];
+    };
 
     //Functions
-    CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
+    PatternControl(VerboseControl *vc, MotorControl *mc);
 
-    void cmdSort(int mode, String cmdS, String valS);
-    void btComm();
-    void btcmd(String cmdS, String valS);
-    void usbComm();
-    void usbcmd(String cmdS, String valS);
+    pulse getPulseAllMotors(int duration, bool state);
+
+    class pattern{
+      public:
+        pulse pulses[maxPatternLength];
+        String name;
+        int motorIDs[motorControl->maxMotors];
+        int duration;
+      private:
+
+    };
+
   private:
 
 };
