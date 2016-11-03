@@ -10,6 +10,7 @@
  * ---------------
  * Dev: Jonathan Brunath
  * DC: 2/01/11/2016
+ * UD: 3/02/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -29,20 +30,20 @@
 class opcControl {
   public:
     //Inherited object
-    VerboseControl *verboseControl;\
+    VerboseControl *verboseControl;
     CommControl *commControl;
+    MotorControl *motorControl;
 
     //constants - declare values that will remain constant throughout the program here
-
 
     //values - place class variables here
 
     //Functions
-    opcControl(VerboseControl *vc, CommControl *cc, int *ID);
+    opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID);
     OPCSerial *serialOPC;
 
     void updateOPC();
-    static bool callback(const char *itemID, const opcOperation opcOP, const bool value);
+    bool motorCallback(const char *itemID, const opcOperation opcOP, const bool value);
 
   private:
 

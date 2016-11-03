@@ -1,3 +1,22 @@
+/*
+ * Credit Format
+ * ---------------
+ * Dev: Your Name Here
+ * DC: Date file was originally create on (only if you are the first contributor)
+ * UP: Date that you made changes to the file
+ *
+ * Note - Date format = day of the week/day of the month/month/year
+ * Ex: Wednesday, July, 1st, 2014 => 3/01/07/2014
+ * ---------------
+ * Dev: Jonathan Brunath
+ * DC: 2/01/11/2016
+ * UD: 3/02/11/2016
+ * ---------------
+ * Dev: Add your name here
+ * UP: Date you made changes
+ * ---------------
+*/
+
 #include <OPC.h>
 #include <Arduino.h>
 #include <HardwareSerial.h>
@@ -5,31 +24,32 @@
 
 /************************************* OPC */
 
-OPC::OPC(VerboseControl *vc) : OPCItemList(NULL) ,  OPCItemsCount(0) {
+OPC::OPC(VerboseControl *vc, MotorControl *mc) : OPCItemList(NULL) ,  OPCItemsCount(0)  {
   verboseControl=vc;
+  callbackObj=new opcCallback(vc,mc);
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int callback_function)
+void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int callback_function)
 {
   OPCItemList = (OPCItemType *) realloc(OPCItemList, (OPCItemsCount + 1) * sizeof(OPCItemType));
   if (OPCItemList != NULL) {
@@ -67,7 +87,7 @@ void OPCSerial::sendOPCItemsMap()
   verboseControl->verboseMsg(F(">"));
 }
 
-OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int *ID) : OPC(vc)  {
+OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID) : OPC(vc,mc)  {
   buffer[0] = '\0';
   commControl=cc;
   commID=ID;
@@ -164,7 +184,7 @@ void OPCSerial::processOPCCommands() {
 
 /************************************* OPCEthernet */
 
-OPCEthernet::OPCEthernet(VerboseControl *vc) : OPC(vc) {}
+OPCEthernet::OPCEthernet(VerboseControl *vc, MotorControl *mc) : OPC(vc,mc) {}
 
 void OPCEthernet::after_setup(uint8_t listen_port)
 {

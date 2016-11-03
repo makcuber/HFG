@@ -1,3 +1,22 @@
+/*
+ * Credit Format
+ * ---------------
+ * Dev: Your Name Here
+ * DC: Date file was originally create on (only if you are the first contributor)
+ * UP: Date that you made changes to the file
+ *
+ * Note - Date format = day of the week/day of the month/month/year
+ * Ex: Wednesday, July, 1st, 2014 => 3/01/07/2014
+ * ---------------
+ * Dev: Jonathan Brunath
+ * DC: 2/01/11/2016
+ * UD: 3/02/11/2016
+ * ---------------
+ * Dev: Add your name here
+ * UP: Date you made changes
+ * ---------------
+*/
+
 #ifndef OPC_H
 #define OPC_H
 
@@ -6,6 +25,8 @@
 #include <Ethernet.h>
 #include <SPI.h>
 #include <VerboseControl.h>
+#include <MotorControl.h>
+#include <opcCallback.h>
 
 #define SERIALCOMMAND_MAXCOMMANDLENGTH 64
 #define SERIALCOMMAND_BUFFER 128
@@ -23,10 +44,7 @@ enum opcAccessRights{
   opc_readwrite
 };
 
-enum opcOperation{
-  opc_opread,
-  opc_opwrite,
-};
+
 class OPC {
 private:
  void internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int callback_function);
@@ -36,18 +54,21 @@ protected:
   byte bufPos;
 public:
   VerboseControl *verboseControl;
-  OPC(VerboseControl *vc);
+  opcCallback *callbackObj;
   struct OPCItemType {
     char *itemID;
     opcAccessRights opcAccessRight;
     opctypes itemType;
-    unsigned int ptr_callback;
+    int ptr_callback;
   };
   OPCItemType *OPCItemList;
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (*function)(const char *itemID, const opcOperation opcOP, const bool value));
+
+  OPC(VerboseControl *vc, MotorControl *mc);
+
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
 };
 
 class OPCSerial : public OPC {
@@ -56,7 +77,7 @@ protected:
 public:
   CommControl *commControl;
   int *commID;
-  OPCSerial(VerboseControl *vc, CommControl *cc, int *ID);
+  OPCSerial(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID);
   void setup();
   void processOPCCommands();
 };
@@ -70,7 +91,7 @@ protected:
   void sendOPCItemsMap();
   void processClientCommand();
 public:
-  OPCEthernet(VerboseControl *vc);
+  OPCEthernet(VerboseControl *vc, MotorControl *mc);
   int  setup(uint8_t listen_port, uint8_t *mac_address);
   void setup(uint8_t listen_port, uint8_t *mac_address, IPAddress local_ip);
   void setup(uint8_t listen_port, uint8_t *mac_address, IPAddress local_ip, IPAddress dns_server);
