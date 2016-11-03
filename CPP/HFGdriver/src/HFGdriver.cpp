@@ -17,6 +17,8 @@
  * UP: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -35,15 +37,15 @@
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=1;
+int opcChannel=0;
 
 //Define Control objects
 CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl);
+opcControl *opcControl;
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
-opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
 
 //function declarations
 void clusterfuck();
@@ -71,6 +73,7 @@ void setup() {
       break;
     default:
       bootControl.boot();
+      opcControl=new opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
       break;
   }
 }
@@ -117,7 +120,9 @@ void loop() {
         //comm2Comm(1, 0, 's');
         bluetoothRead();
       }
-
+      //OPC
+        opcControl.enabled=commandControl.opcEnabled;
+        opcControl.updateOPC();
       break;
   }
 }

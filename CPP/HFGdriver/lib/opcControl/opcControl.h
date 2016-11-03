@@ -10,7 +10,8 @@
  * ---------------
  * Dev: Jonathan Brunath
  * DC: 2/01/11/2016
- * UD: 3/02/11/2016
+* UD: 3/02/11/2016
+* UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -28,21 +29,27 @@
 #include <MotorControl.h>
 
 class opcControl {
+  private:
+    OPCSerial *serialOPC;
+    opcCallback *callbackObj;
   public:
     //Inherited object
     VerboseControl *verboseControl;
     CommControl *commControl;
     MotorControl *motorControl;
-    opcCallback *callbackObj;
+
 
     //constants - declare values that will remain constant throughout the program here
 
     //values - place class variables here
+    bool enabled;
 
     //Functions
+    opcControl();
     opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID);
-    OPCSerial *serialOPC;
 
+
+    void setup();
     void updateOPC();
 
   private:

@@ -11,6 +11,7 @@
  * Dev: Jonathan Brunath
  * DC: 2/01/11/2016
  * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -25,15 +26,19 @@ opcControl::opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, in
   motorControl=mc;
   callbackObj=new opcCallback(vc,mc);
 
+  enabled=false;
   serialOPC=new OPCSerial(vc,cc,ID);
   serialOPC->setup();
   for(int i=0;i<motorControl->maxMotors;i++){
     char tmp = char(i);
     serialOPC->addItem(&tmp, opc_readwrite, opc_bool, &opcCallback::motorCallback);
   }
+}
+void opcControl::setup(){
 
 }
-
 void opcControl::updateOPC() {
-  serialOPC->processOPCCommands();
+  if(enabled){
+    serialOPC->processOPCCommands();
+  }
 }

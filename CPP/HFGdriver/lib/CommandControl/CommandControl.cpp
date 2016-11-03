@@ -14,6 +14,8 @@
  * DC: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -29,6 +31,7 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
   verboseControl=vc;
   motorControl=mc;
   bootControl=bc;
+  //opcControl=oc;
 
   mode = 1;
 
@@ -154,7 +157,8 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
-      //bluetoothWrite(valS);
+      verboseControl->setVerbose(opcEnabled,0);
+      opcEnabled=!opcEnabled;
       break;
 
     default:

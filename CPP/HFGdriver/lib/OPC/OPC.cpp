@@ -10,7 +10,8 @@
  * ---------------
  * Dev: Jonathan Brunath
  * DC: 2/01/11/2016
- * UD: 3/02/11/2016
+* UD: 3/02/11/2016
+* UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -72,18 +73,21 @@ void OPCSerial::setup() {}
 
 void OPCSerial::sendOPCItemsMap()
 {
-  Serial.print(F("<0"));
+  String str;
+  str+=String(F("<0"));
 
   for(int k=0;k<OPCItemsCount;k++) {
-    Serial.print(F(","));
-    Serial.print(OPCItemList[k].itemID);
-    Serial.print(F(","));
-    Serial.print(int(OPCItemList[k].opcAccessRight));
-    Serial.print(F(","));
-    Serial.print(int(OPCItemList[k].itemType));
+    str+=String(F(","));
+    str+=String(OPCItemList[k].itemID);
+    str+=String(F(","));
+    str+=String(int(OPCItemList[k].opcAccessRight));
+    str+=String(F(","));
+    str+=String(int(OPCItemList[k].itemType));
   }
 
-  verboseControl->verboseMsg(F(">"));
+  str+=String(F(">"));
+  verboseControl->verboseMsg(str);
+  commControl->SerialWriteS(*commID,str);
 }
 
 OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int *ID) : OPC(vc)  {
@@ -102,7 +106,7 @@ void OPCSerial::processOPCCommands() {
   float (*float_callback)(const char *itemID, const opcOperation opcOP, const float value);
 
   while (commControl->getCommStatus(*commID) > 0) {
-    char inChar = Serial.read();
+    char inChar = commControl->SerialReadB(*commID);
 
     if (inChar == '\r') {
       if (buffer[0] == '\0')
@@ -116,19 +120,19 @@ void OPCSerial::processOPCCommands() {
           switch (OPCItemList[i].itemType) {
             case opc_bool :
                       bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      verboseControl->verboseMsg(String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      commControl->SerialWriteS(*commID,String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL)));
                       break;
             case opc_byte :
                       byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
-                      verboseControl->verboseMsg(String(byte_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      commControl->SerialWriteS(*commID,String(byte_callback(OPCItemList[i].itemID,opc_opread,NULL)));
                       break;
             case opc_int :
                       int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
-                      verboseControl->verboseMsg(String(int_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      commControl->SerialWriteS(*commID,String(int_callback(OPCItemList[i].itemID,opc_opread,NULL)));
                       break;
             case opc_float :
                       float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
-                      verboseControl->verboseMsg(String(float_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      commControl->SerialWriteS(*commID,String(float_callback(OPCItemList[i].itemID,opc_opread,NULL)));
                       break;
           }
 

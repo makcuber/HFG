@@ -28,6 +28,7 @@
 #include <CommControl.h>
 #include <MotorControl.h>
 #include <BootControl.h>
+#include <opcControl.h>
 
 class CommandControl {
   public:
@@ -36,6 +37,7 @@ class CommandControl {
     VerboseControl *verboseControl;
     MotorControl *motorControl;
     BootControl *bootControl;
+    opcControl *opcControl;
 
     //constants - declare values that will remain constant throughout the program here
 
@@ -44,6 +46,8 @@ class CommandControl {
 
     int btMode;
     int usbMode;
+
+    bool opcEnabled;
 
     //Functions
     CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
