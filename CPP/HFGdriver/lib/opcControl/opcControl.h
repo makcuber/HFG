@@ -33,6 +33,7 @@ class opcControl {
     VerboseControl *verboseControl;
     CommControl *commControl;
     MotorControl *motorControl;
+    opcCallback *callbackObj;
 
     //constants - declare values that will remain constant throughout the program here
 
@@ -43,7 +44,6 @@ class opcControl {
     OPCSerial *serialOPC;
 
     void updateOPC();
-    bool motorCallback(const char *itemID, const opcOperation opcOP, const bool value);
 
   private:
 

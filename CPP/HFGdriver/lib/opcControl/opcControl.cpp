@@ -23,11 +23,13 @@ opcControl::opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, in
   verboseControl=vc;
   commControl=cc;
   motorControl=mc;
+  callbackObj=new opcCallback(vc,mc);
 
   serialOPC=new OPCSerial(vc,cc,ID);
   serialOPC->setup();
   for(int i=0;i<motorControl->maxMotors;i++){
-    serialOPC->addItem(char(i), opc_readwrite, opc_bool, callback);
+    char tmp = char(i);
+    serialOPC->addItem(&tmp, opc_readwrite, opc_bool, &opcCallback::motorCallback);
   }
 
 }

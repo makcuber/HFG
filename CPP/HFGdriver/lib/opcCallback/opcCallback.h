@@ -16,8 +16,8 @@
  * ---------------
 */
 
-#ifndef __opcControl_H_defined__
-#define __opcControl_H_defined__
+#ifndef __opcCallback_H_defined__
+#define __opcCallback_H_defined__
 
 #include <VerboseControl.h>
 #include <MotorControl.h>

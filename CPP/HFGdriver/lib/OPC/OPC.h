@@ -25,7 +25,7 @@
 #include <Ethernet.h>
 #include <SPI.h>
 #include <VerboseControl.h>
-#include <MotorControl.h>
+//#include <MotorControl.h>
 #include <opcCallback.h>
 
 #define SERIALCOMMAND_MAXCOMMANDLENGTH 64
@@ -44,7 +44,6 @@ enum opcAccessRights{
   opc_readwrite
 };
 
-
 class OPC {
 private:
  void internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int callback_function);
@@ -54,7 +53,7 @@ protected:
   byte bufPos;
 public:
   VerboseControl *verboseControl;
-  opcCallback *callbackObj;
+  //opcCallback *callbackObj;
   struct OPCItemType {
     char *itemID;
     opcAccessRights opcAccessRight;
@@ -63,7 +62,7 @@ public:
   };
   OPCItemType *OPCItemList;
 
-  OPC(VerboseControl *vc, MotorControl *mc);
+  OPC(VerboseControl *vc);
 
   void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
   void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
@@ -77,7 +76,7 @@ protected:
 public:
   CommControl *commControl;
   int *commID;
-  OPCSerial(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID);
+  OPCSerial(VerboseControl *vc, CommControl *cc, int *ID);
   void setup();
   void processOPCCommands();
 };
@@ -91,7 +90,7 @@ protected:
   void sendOPCItemsMap();
   void processClientCommand();
 public:
-  OPCEthernet(VerboseControl *vc, MotorControl *mc);
+  OPCEthernet(VerboseControl *vc);
   int  setup(uint8_t listen_port, uint8_t *mac_address);
   void setup(uint8_t listen_port, uint8_t *mac_address, IPAddress local_ip);
   void setup(uint8_t listen_port, uint8_t *mac_address, IPAddress local_ip, IPAddress dns_server);

@@ -29,11 +29,13 @@
 #include <CommControl.h>
 #include <VerboseControl.h>
 #include <CommandControl.h>
+#include <opcControl.h>
 
 //constants - declare values that will remain constant throughout the program here
 
 //values - place global variables here
 char runMode = 'n';
+int opcChannel=1;
 
 //Define Control objects
 CommControl commControl;
@@ -41,6 +43,7 @@ VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl);
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
+opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
 
 //function declarations
 void clusterfuck();

@@ -24,9 +24,8 @@
 
 /************************************* OPC */
 
-OPC::OPC(VerboseControl *vc, MotorControl *mc) : OPCItemList(NULL) ,  OPCItemsCount(0)  {
+OPC::OPC(VerboseControl *vc) : OPCItemList(NULL) ,  OPCItemsCount(0)  {
   verboseControl=vc;
-  callbackObj=new opcCallback(vc,mc);
 }
 
 void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
@@ -87,7 +86,7 @@ void OPCSerial::sendOPCItemsMap()
   verboseControl->verboseMsg(F(">"));
 }
 
-OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, MotorControl *mc, int *ID) : OPC(vc,mc)  {
+OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int *ID) : OPC(vc)  {
   buffer[0] = '\0';
   commControl=cc;
   commID=ID;
@@ -184,7 +183,7 @@ void OPCSerial::processOPCCommands() {
 
 /************************************* OPCEthernet */
 
-OPCEthernet::OPCEthernet(VerboseControl *vc, MotorControl *mc) : OPC(vc,mc) {}
+OPCEthernet::OPCEthernet(VerboseControl *vc) : OPC(vc) {}
 
 void OPCEthernet::after_setup(uint8_t listen_port)
 {
