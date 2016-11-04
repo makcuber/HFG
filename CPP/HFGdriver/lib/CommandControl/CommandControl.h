@@ -14,6 +14,7 @@
  * DC: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UD: 4/03/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -28,7 +29,7 @@
 #include <CommControl.h>
 #include <MotorControl.h>
 #include <BootControl.h>
-#include <opcControl.h>
+//#include <opcControl.h>
 
 class CommandControl {
   public:
@@ -37,13 +38,13 @@ class CommandControl {
     VerboseControl *verboseControl;
     MotorControl *motorControl;
     BootControl *bootControl;
-    opcControl *opcControl;
+    //opcControl *opcControl;
 
     //constants - declare values that will remain constant throughout the program here
 
     //values - place class variables here
     int mode;
-
+    String cmdS,valS;
     int btMode;
     int usbMode;
 

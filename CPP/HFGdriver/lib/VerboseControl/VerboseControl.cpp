@@ -27,6 +27,7 @@
 
 VerboseControl::VerboseControl(CommControl *cc){
   commControl=cc;
+  defaultClearWidth=80;
 }
 
 void VerboseControl::verboseMsg(String msg) {
@@ -45,8 +46,9 @@ void VerboseControl::setVerbose(bool state, int comm) {
 //CLI
 
 void VerboseControl::clearConsole() {
+  verboseMsg(String(defaultClearWidth));
   for (int i = 0; i < defaultClearWidth; i++) {
-    verboseMsg("");
+    verboseMsg("\n");
   }
 }
 void VerboseControl::showMenu(int m) {

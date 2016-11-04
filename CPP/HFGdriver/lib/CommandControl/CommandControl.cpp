@@ -33,7 +33,7 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
   bootControl=bc;
   //opcControl=oc;
 
-  mode = 1;
+  mode = 0;
 
   btMode = 0;
   usbMode = 0;
@@ -67,7 +67,7 @@ void CommandControl::cmdSort(int mode, String cmdS, String valS) {
   }
 }
 void CommandControl::btComm() {
-  String cmdS,valS;
+  //String cmdS,valS;
   while (Serial1.available()) {
     cmdS = Serial1.readStringUntil(',');
     valS = Serial1.readStringUntil('\n');
@@ -76,8 +76,8 @@ void CommandControl::btComm() {
   cmdSort(btMode, cmdS, valS);
 
   //reset the cmd and val variables for the next cycle
-  //cmdS = "-1";
-  //valS = "-1";
+  cmdS = "-1";
+  valS = "-1";
 }
 void CommandControl::btcmd(String cmdS, String valS) {
   int cmd = cmdS.toInt();
@@ -111,7 +111,6 @@ void CommandControl::btcmd(String cmdS, String valS) {
   }
 }
 void CommandControl::usbComm() {
-  String cmdS,valS;
   while (Serial.available()) {
     cmdS = Serial.readStringUntil(',');
     valS = Serial.readStringUntil('\n');
@@ -120,8 +119,8 @@ void CommandControl::usbComm() {
   cmdSort(usbMode, cmdS, valS);
 
   //reset the cmd and val variables for the next cycle
-  //cmdS = "-1";
-  //valS = "-1";
+  cmdS = "-1";
+  valS = "-1";
 }
 void CommandControl::usbcmd(String cmdS, String valS) {
   int cmd = cmdS.toInt();

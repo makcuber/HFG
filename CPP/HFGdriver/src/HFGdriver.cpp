@@ -44,7 +44,7 @@ CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl);
-opcControl *opcControl;
+opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
 
 //function declarations
@@ -73,7 +73,7 @@ void setup() {
       break;
     default:
       bootControl.boot();
-      opcControl=new opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
+      opcControl.enabled=true;
       break;
   }
 }
@@ -121,8 +121,7 @@ void loop() {
         bluetoothRead();
       }
       //OPC
-        opcControl.enabled=commandControl.opcEnabled;
-        opcControl.updateOPC();
+      opcControl.updateOPC();
       break;
   }
 }
