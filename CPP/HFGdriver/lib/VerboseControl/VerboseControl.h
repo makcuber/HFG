@@ -14,6 +14,7 @@
  * DC: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UP: 2/08/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -31,14 +32,23 @@ class VerboseControl {
     //Inherited object
     CommControl *commControl;
 
+    //constants
+    const static int maxVerboseLevel = 2;
+    const static int maxComms = 4;
+
     //Variables
     int defaultClearWidth;
-    bool verboseEnabled[4];
+    bool verboseEnabled[maxComms]; //replace with vector and set size in class init using commControl->maxComms
+    bool debugEnabled[maxComms]; //replace with vector and set size in class init using commControl->maxComms
+    int verboseLevel[maxComms][maxVerboseLevel];
 
     VerboseControl(CommControl *cc);
 
+    void setVerboseLevel(int level, int comm);
     void verboseMsg(String msg);
     void setVerbose(bool state, int comm);
+    void debugMsg(String msg);
+    void setDebug(bool state, int comm);
 
     void clearConsole();
     void showMenu(int m);

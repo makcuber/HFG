@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
+ * UP: 2/08/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -49,8 +50,8 @@ void BootControl::boot() {
 
   //set comm port states
 
-  verboseControl->verboseEnabled[0] = false;
-  verboseControl->verboseEnabled[1] = true;
+  //verboseControl->setVerboseLevel(2, 1);
+  verboseControl->setVerboseLevel(2, 1);
 
   verboseControl->verboseMsg("Serial Communications Established");
   verboseControl->verboseMsg("---------------------------------");

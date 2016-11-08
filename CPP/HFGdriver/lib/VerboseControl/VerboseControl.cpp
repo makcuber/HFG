@@ -15,6 +15,7 @@
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
  * UD: 4/03/11/2016
+ * UP: 2/08/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -27,7 +28,43 @@
 
 VerboseControl::VerboseControl(CommControl *cc){
   commControl=cc;
+  if(commControl->maxComms!=maxComms){
+    if(commControl->maxComms>maxComms){
+      int tmp=commControl->maxComms-maxComms;
+      debugMsg("Warning: commControl reports "+String(tmp)+" more commPorts than verboseControl is aware of");
+    } else{
+      int tmp=maxComms-commControl->maxComms;
+      debugMsg("Warning: verboseControl reports "+String(tmp)+" more commPorts than commControl is aware of");
+    }
+
+  }
   defaultClearWidth=80;
+  for(int i=0;i<commControl->maxComms;i++){
+    setVerboseLevel(0, i);
+  }
+}
+
+void VerboseControl::setVerboseLevel(int level, int comm) {
+  if((comm<commControl->maxComms)&(comm>0)){
+    if((level<maxVerboseLevel)&(level>0)){
+      switch(level){
+        case 0:
+          setVerbose(false, comm);
+          setDebug(false, comm);
+          break;
+        case 1:
+          setVerbose(true, comm);
+          setDebug(false, comm);
+          break;
+        case 2:
+          setVerbose(true, comm);
+          setDebug(true, comm);
+          break;
+        default:
+          break;
+      }
+    }
+  }
 }
 
 void VerboseControl::verboseMsg(String msg) {
@@ -42,6 +79,22 @@ void VerboseControl::setVerbose(bool state, int comm) {
     verboseEnabled[comm] = state;
   }
 }
+
+//Debug
+
+void VerboseControl::debugMsg(String msg) {
+  for(int i=0;i<commControl->maxComms;i++){
+    if (debugEnabled[i]) {
+      commControl->SerialWriteS(i, msg);
+    }
+  }
+}
+void VerboseControl::setDebug(bool state, int comm) {
+  if((comm<commControl->maxComms)&(comm>0)){
+    debugEnabled[comm] = state;
+  }
+}
+
 
 //CLI
 
