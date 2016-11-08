@@ -45,8 +45,8 @@ VerboseControl::VerboseControl(CommControl *cc){
 }
 
 void VerboseControl::setVerboseLevel(int level, int comm) {
-  if((comm<commControl->maxComms)&(comm>0)){
-    if((level<maxVerboseLevel)&(level>0)){
+  if((comm<commControl->maxComms)&(comm>=0)){
+    if((level<=maxVerboseLevel)&(level>=0)){
       switch(level){
         case 0:
           setVerbose(false, comm);
@@ -75,7 +75,7 @@ void VerboseControl::verboseMsg(String msg) {
   }
 }
 void VerboseControl::setVerbose(bool state, int comm) {
-  if((comm<commControl->maxComms)&(comm>0)){
+  if((comm<commControl->maxComms)&(comm>=0)){
     verboseEnabled[comm] = state;
   }
 }
@@ -90,7 +90,7 @@ void VerboseControl::debugMsg(String msg) {
   }
 }
 void VerboseControl::setDebug(bool state, int comm) {
-  if((comm<commControl->maxComms)&(comm>0)){
+  if((comm<commControl->maxComms)&(comm>=0)){
     debugEnabled[comm] = state;
   }
 }

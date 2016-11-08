@@ -30,9 +30,11 @@ opcControl::opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, in
   serialOPC=new OPCSerial(vc,cc,ID);
   serialOPC->setup();
   for(int i=0;i<motorControl->maxMotors;i++){
-    char tmp = char(i);
-    serialOPC->addItem(&tmp, opc_readwrite, opc_bool, &opcCallback::motorCallback);
+    char c = char(i);
+    const char *cs = &c;
+    serialOPC->addItem(cs, opc_readwrite, opc_bool, &opcCallback::motorCallback);
   }
+  //serialOPC->sendOPCItemsMap();
 }
 void opcControl::setup(){
 

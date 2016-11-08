@@ -111,7 +111,7 @@ void loop() {
       break;
     default:
       //USB Communication
-      commandControl.usbComm();
+      //commandControl.usbComm();
       //Bluetooth Communication
       commandControl.btComm();
       //push Bluetooth communications to USB communications

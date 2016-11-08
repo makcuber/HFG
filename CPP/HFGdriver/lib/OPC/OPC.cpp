@@ -73,6 +73,8 @@ void OPCSerial::setup() {}
 
 void OPCSerial::sendOPCItemsMap()
 {
+  //Everything in this fucntion seems to be wrong
+  //output is not formatted in a way that the PC client understands
   String str;
   str+=String(F("<0"));
 
@@ -107,7 +109,7 @@ void OPCSerial::processOPCCommands() {
 
   while (commControl->getCommStatus(*commID) > 0) {
     char inChar = commControl->SerialReadB(*commID);
-
+    verboseControl->debugMsg("OPC Buffer: "+String(inChar));
     if (inChar == '\r') {
       if (buffer[0] == '\0')
         sendOPCItemsMap();
