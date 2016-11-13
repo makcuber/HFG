@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
+ * UD: 6/12/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -53,6 +54,7 @@ class CommControl{
     void SerialWriteB(int comm, int msg);
     String SerialReadS(int comm);
     void SerialWriteS(int comm, String msg);
+    String SerialReadUntil(int comm, char c);
 
     void reconnectComm(int comm);
     void connectComm(int comm);

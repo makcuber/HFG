@@ -50,7 +50,7 @@ void BootControl::boot() {
 
   //set comm port states
   //verboseControl->verboseEnabled[0]=true;
-  //verboseControl->setVerboseLevel(2, 0);
+  verboseControl->setVerboseLevel(2, 0);
   verboseControl->setVerboseLevel(2, 1);
 
   verboseControl->verboseMsg("Serial Communications Established");
@@ -58,14 +58,14 @@ void BootControl::boot() {
   verboseControl->verboseMsg("CommPort\t|Status\t|Verbose");
   verboseControl->verboseMsg("---------------------------------");
   for (int i = 0; i < commControl->maxComms; i++) {
-    verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(commControl->commState[i]) + "\t|" + String(verboseControl->verboseEnabled[i]));
+    verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(commControl->getCommStatus(i)) + "\t|" + String(verboseControl->verboseEnabled[i]));
   }
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("");
 
   verboseControl->verboseMsg("Initializing System");
   verboseControl->verboseMsg("-------------------");
-
+  
   //configure motors pins for each motor
   verboseControl->verboseMsg("Configuring motor pins...");
   verboseControl->verboseMsg("-----------------------------------");

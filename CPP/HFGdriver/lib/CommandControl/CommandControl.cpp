@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
+ * UD: 6/12/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -33,10 +34,16 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
   bootControl=bc;
   //opcControl=oc;
 
+  bluetoothChannel=1;
+  usbChannel=0;
+
   mode = 0;
 
   btMode = 0;
   usbMode = 0;
+
+  cmdS = "-1";
+  valS = "-1";
 }
 
 void CommandControl::cmdSort(int mode, String cmdS, String valS) {
@@ -68,9 +75,9 @@ void CommandControl::cmdSort(int mode, String cmdS, String valS) {
 }
 void CommandControl::btComm() {
   //String cmdS,valS;
-  while (Serial1.available()) {
-    cmdS = Serial1.readStringUntil(',');
-    valS = Serial1.readStringUntil('\n');
+  while (commControl->getCommStatus(bluetoothChannel)) {
+    cmdS = commControl->SerialReadUntil(bluetoothChannel,',');
+    valS = commControl->SerialReadUntil(bluetoothChannel,'\n');
   }
 
   cmdSort(btMode, cmdS, valS);
@@ -104,9 +111,6 @@ void CommandControl::btcmd(String cmdS, String valS) {
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
-      if (verboseControl->verboseEnabled[1]) {
-
-      }
       break;
   }
 }
@@ -159,7 +163,6 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       verboseControl->setVerbose(opcEnabled,0);
       opcEnabled=!opcEnabled;
       break;
-
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
       break;

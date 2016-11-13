@@ -14,6 +14,7 @@
  * DC: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UD: 6/12/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -236,4 +237,31 @@ void CommControl::SerialWriteS(int comm, String msg) {
         break;
     }
   }
+}
+String CommControl::SerialReadUntil(int comm, char c) {
+  switch (comm) {
+    case 0:
+      if (getCommStatus(comm)) {
+        return Serial.readStringUntil(c);
+      }
+      break;
+    case 1:
+      if (getCommStatus(comm)) {
+        return Serial1.readStringUntil(c);
+      }
+      break;
+    case 2:
+      if (getCommStatus(comm)) {
+        return Serial2.readStringUntil(c);
+      }
+      break;
+    case 3:
+      if (getCommStatus(comm)) {
+        return Serial3.readStringUntil(c);
+        break;
+      }
+    default:
+      break;
+  }
+  return "";
 }

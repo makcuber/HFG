@@ -15,6 +15,7 @@
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
  * UD: 4/03/11/2016
+ * UD: 6/12/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -47,6 +48,9 @@ class CommandControl {
     String cmdS,valS;
     int btMode;
     int usbMode;
+
+    int usbChannel;
+    int bluetoothChannel;
 
     bool opcEnabled;
 

@@ -37,7 +37,7 @@
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=0;
+int opcChannel=2;
 
 //Define Control objects
 CommControl commControl;
@@ -111,15 +111,16 @@ void loop() {
       break;
     default:
       //USB Communication
-      //commandControl.usbComm();
+      commandControl.usbComm();
       //Bluetooth Communication
       commandControl.btComm();
       //push Bluetooth communications to USB communications
-
+      /*
       if (commControl.btEnabled) {
         //comm2Comm(1, 0, 's');
         bluetoothRead();
       }
+      */
       //OPC
       opcControl.updateOPC();
       break;
