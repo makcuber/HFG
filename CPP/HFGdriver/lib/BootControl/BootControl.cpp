@@ -17,6 +17,8 @@
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
  * UP: 2/08/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -65,7 +67,7 @@ void BootControl::boot() {
 
   verboseControl->verboseMsg("Initializing System");
   verboseControl->verboseMsg("-------------------");
-  
+
   //configure motors pins for each motor
   verboseControl->verboseMsg("Configuring motor pins...");
   verboseControl->verboseMsg("-----------------------------------");

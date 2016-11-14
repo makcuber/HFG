@@ -19,6 +19,8 @@
  * UP: 2/18/10/2016
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -37,7 +39,7 @@
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=2;
+int opcChannel=0;
 
 //Define Control objects
 CommControl commControl;
@@ -74,6 +76,7 @@ void setup() {
     default:
       bootControl.boot();
       opcControl.enabled=true;
+      opcControl.setup();
       break;
   }
 }

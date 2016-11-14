@@ -10,8 +10,10 @@
  * ---------------
  * Dev: Jonathan Brunath
  * DC: 2/01/11/2016
-* UD: 3/02/11/2016
-* UD: 4/03/11/2016
+ * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -73,21 +75,20 @@ void OPCSerial::setup() {}
 
 void OPCSerial::sendOPCItemsMap()
 {
-  //Everything in this fucntion seems to be wrong
-  //output is not formatted in a way that the PC client understands
   String str;
-  str+=String(F("<0"));
+  str+=String("<0");
 
   for(int k=0;k<OPCItemsCount;k++) {
-    str+=String(F(","));
+    str+=String(",");
     str+=String(OPCItemList[k].itemID);
-    str+=String(F(","));
+    str+=String(",");
     str+=String(int(OPCItemList[k].opcAccessRight));
-    str+=String(F(","));
+    str+=String(",");
     str+=String(int(OPCItemList[k].itemType));
+    //str+="|";
   }
 
-  str+=String(F(">"));
+  str+=String(">");
   verboseControl->verboseMsg(str);
   commControl->SerialWriteS(*commID,str);
 }
@@ -122,7 +123,9 @@ void OPCSerial::processOPCCommands() {
           switch (OPCItemList[i].itemType) {
             case opc_bool :
                       bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      commControl->SerialWriteS(*commID,String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      String cb=String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
+
+                      commControl->SerialWriteS(*commID,cb);
                       break;
             case opc_byte :
                       byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);

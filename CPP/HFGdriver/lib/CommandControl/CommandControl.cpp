@@ -160,8 +160,7 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
-      verboseControl->setVerbose(opcEnabled,0);
-      opcEnabled=!opcEnabled;
+      commControl->SerialWriteS(0,"\r");
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command

@@ -12,6 +12,8 @@
  * DC: 2/01/11/2016
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -28,16 +30,16 @@ opcControl::opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, in
 
   enabled=false;
   serialOPC=new OPCSerial(vc,cc,ID);
-  serialOPC->setup();
-  for(int i=0;i<motorControl->maxMotors;i++){
-    char c = char(i);
-    const char *cs = &c;
-    serialOPC->addItem(cs, opc_readwrite, opc_bool, &opcCallback::motorCallback);
-  }
-  //serialOPC->sendOPCItemsMap();
 }
 void opcControl::setup(){
-
+  serialOPC->setup();
+  for(int i=0;i<motorControl->maxMotors;i++){
+    String str = "Motor"+String(i);
+    const char *c=str.c_str();
+    verboseControl->debugMsg("Added OPC Item "+str);
+    serialOPC->addItem(c, opc_readwrite, opc_bool, &opcCallback::motorCallback);
+  }
+  //serialOPC->sendOPCItemsMap();
 }
 void opcControl::updateOPC() {
   if(enabled){
