@@ -35,6 +35,7 @@ bool opcCallback::motorCallback(const char *itemID, const opcOperation opcOP, co
 
   } else {
     tmpB=motorControl->motorState[int(*itemID)];
+    verboseControl->verboseMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
   }
   return tmpB;
 }

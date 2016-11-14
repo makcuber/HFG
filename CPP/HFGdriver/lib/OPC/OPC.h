@@ -68,9 +68,9 @@ public:
   OPC(VerboseControl *vc);
 
   void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const byte value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const int value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const float value));
 };
 
 class OPCSerial : public OPC {

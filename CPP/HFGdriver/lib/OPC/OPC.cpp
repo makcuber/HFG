@@ -36,17 +36,17 @@ void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes o
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const byte value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const int value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const float value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
@@ -85,11 +85,10 @@ void OPCSerial::sendOPCItemsMap()
     str+=String(int(OPCItemList[k].opcAccessRight));
     str+=String(",");
     str+=String(int(OPCItemList[k].itemType));
-    //str+="|";
   }
 
   str+=String(">");
-  verboseControl->verboseMsg(str);
+  verboseControl->debugMsg("OPCItems Map: "+str);
   commControl->SerialWriteS(*commID,str);
 }
 
@@ -110,15 +109,19 @@ void OPCSerial::processOPCCommands() {
 
   while (commControl->getCommStatus(*commID) > 0) {
     char inChar = commControl->SerialReadB(*commID);
-    verboseControl->debugMsg("OPC Buffer: "+String(inChar));
+    verboseControl->debugMsg("OPC inChar: "+String(inChar));
     if (inChar == '\r') {
+      //verboseControl->debugMsg("OPC Buffer: "+String(buffer[0]));
       if (buffer[0] == '\0')
         sendOPCItemsMap();
       else {
+
         // Lets search for read
         for (int i = 0; i < OPCItemsCount; i++) {
          if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
-
+          verboseControl->debugMsg("OPC Buffer: "+String(buffer));
+          verboseControl->debugMsg("OPC Item ID: "+String(i));
+          verboseControl->debugMsg("OPC Item Type: "+String(OPCItemList[i].itemType));
           // Execute the stored handler function for the command
           String cb;
           switch (OPCItemList[i].itemType) {

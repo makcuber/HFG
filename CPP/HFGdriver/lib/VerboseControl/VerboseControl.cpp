@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UD: 4/03/11/2016
  * UP: 2/08/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -51,14 +52,22 @@ void VerboseControl::setVerboseLevel(int level, int comm) {
         case 0:
           setVerbose(false, comm);
           setDebug(false, comm);
+          verboseLevel[comm]=level;
           break;
         case 1:
           setVerbose(true, comm);
           setDebug(false, comm);
+          verboseLevel[comm]=level;
           break;
         case 2:
+          setVerbose(false, comm);
+          setDebug(true, comm);
+          verboseLevel[comm]=level;
+          break;
+        case 3:
           setVerbose(true, comm);
           setDebug(true, comm);
+          verboseLevel[comm]=level;
           break;
         default:
           break;

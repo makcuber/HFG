@@ -51,9 +51,8 @@ void BootControl::boot() {
   commControl->connectComm(1);
 
   //set comm port states
-  //verboseControl->verboseEnabled[0]=true;
-  verboseControl->setVerboseLevel(2, 0);
-  verboseControl->setVerboseLevel(2, 1);
+  verboseControl->setVerboseLevel(1, 0);
+  verboseControl->setVerboseLevel(3, 1);
 
   verboseControl->verboseMsg("Serial Communications Established");
   verboseControl->verboseMsg("---------------------------------");

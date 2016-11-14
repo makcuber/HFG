@@ -34,7 +34,7 @@
 #include <VerboseControl.h>
 #include <CommandControl.h>
 #include <opcControl.h>
-#include <PatternControl.h>
+//#include <PatternControl.h>
 
 //constants - declare values that will remain constant throughout the program here
 
@@ -115,7 +115,10 @@ void loop() {
       break;
     default:
       //USB Communication
-      commandControl.usbComm();
+      if(verboseControl.verboseLevel[0]>1){
+        commandControl.usbComm();
+      }
+
       //Bluetooth Communication
       commandControl.btComm();
       //push Bluetooth communications to USB communications

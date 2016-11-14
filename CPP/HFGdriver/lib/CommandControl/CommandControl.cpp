@@ -17,6 +17,7 @@
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
  * UD: 6/12/11/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -144,8 +145,14 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 3:
      verboseControl->verboseMsg("USB cmd#3");
-     verboseControl->setVerbose(true,1);
-      break;
+     if(verboseControl->verboseLevel[0]>0){
+       verboseControl->setVerboseLevel(0, 0);
+     }else{
+       verboseControl->setVerboseLevel(3, 0);
+     }
+     verboseControl->verboseMsg("Comm #0 Verbose Level set to: "+String(verboseControl->verboseLevel[0]));
+
+     break;
     case 4:
      verboseControl->verboseMsg("USB cmd#4");
      motorControl->setMotorState(val, true);
@@ -160,7 +167,6 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
-      commControl->SerialWriteS(0,"\r");
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
