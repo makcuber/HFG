@@ -34,6 +34,7 @@
 #include <VerboseControl.h>
 #include <CommandControl.h>
 #include <opcControl.h>
+#include <PatternControl.h>
 
 //constants - declare values that will remain constant throughout the program here
 

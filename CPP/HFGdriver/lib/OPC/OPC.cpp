@@ -120,23 +120,30 @@ void OPCSerial::processOPCCommands() {
          if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
 
           // Execute the stored handler function for the command
+          String cb;
           switch (OPCItemList[i].itemType) {
             case opc_bool :
                       bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      String cb=String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
-
+                      cb = String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg(cb);
                       commControl->SerialWriteS(*commID,cb);
                       break;
             case opc_byte :
                       byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
-                      commControl->SerialWriteS(*commID,String(byte_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      cb = String(byte_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg(cb);
+                      commControl->SerialWriteS(*commID,cb);
                       break;
             case opc_int :
                       int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
-                      commControl->SerialWriteS(*commID,String(int_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      cb = String(int_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg(cb);
+                      commControl->SerialWriteS(*commID,cb);
                       break;
             case opc_float :
                       float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
+                      cb = String(float_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg(cb);
                       commControl->SerialWriteS(*commID,String(float_callback(OPCItemList[i].itemID,opc_opread,NULL)));
                       break;
           }

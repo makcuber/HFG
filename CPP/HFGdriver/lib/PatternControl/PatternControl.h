@@ -12,6 +12,7 @@
  * ---------------
  * Dev: Jonathan Brunath
  * DC: 3/19/10/2016
+ * UD: 1/14/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -24,6 +25,8 @@
 #include <Arduino.h>
 #include <VerboseControl.h>
 #include <MotorControl.h>
+#include <stdlib.h>
+#include <vector>
 
 class PatternControl {
   public:
@@ -35,27 +38,30 @@ class PatternControl {
     static const int maxPatternLength = 4;
 
     //values - place class variables here
-    struct pulse {
-      bool motorIDs[motorControl->maxMotors];
-      int duration;
-      bool state;
-    };
     struct motorArray{
       int width,length;
-      bool motorIDs[motorControl->maxMotors];
+      std::vector<int> xIDs(motorControl->maxMotors);
+      std::vector<int> yIDs(motorControl->maxMotors);
+    }testArray;
+
+    struct pulse{
+      int duration;
+      bool state;
+      std::vector<bool> xStates;
+      std::vector<bool> yStates;
     };
 
     //Functions
     PatternControl(VerboseControl *vc, MotorControl *mc);
+    PatternControl(VerboseControl *vc, MotorControl *mc, int n);
 
     pulse getPulseAllMotors(int duration, bool state);
 
     class pattern{
       public:
-        pulse pulses[maxPatternLength];
         String name;
-        int motorIDs[motorControl->maxMotors];
-        int duration;
+        motorArray *layout;
+        pulse *pulses[maxPatternLength];
       private:
 
     };
