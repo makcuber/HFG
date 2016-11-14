@@ -30,12 +30,13 @@ bool opcCallback::motorCallback(const char *itemID, const opcOperation opcOP, co
    */
   if (opcOP == opc_opwrite) {
     tmpB = value;
-    verboseControl->verboseMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+    verboseControl->debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
     motorControl->setMotorState(int(*itemID), value);
 
   } else {
     tmpB=motorControl->motorState[int(*itemID)];
-    verboseControl->verboseMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    verboseControl->debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
   }
+  verboseControl->debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
   return tmpB;
 }

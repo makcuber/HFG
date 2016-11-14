@@ -148,7 +148,7 @@ void CommandControl::usbcmd(String cmdS, String valS) {
      if(verboseControl->verboseLevel[0]>0){
        verboseControl->setVerboseLevel(0, 0);
      }else{
-       verboseControl->setVerboseLevel(3, 0);
+       verboseControl->setVerboseLevel(1, 0);
      }
      verboseControl->verboseMsg("Comm #0 Verbose Level set to: "+String(verboseControl->verboseLevel[0]));
 

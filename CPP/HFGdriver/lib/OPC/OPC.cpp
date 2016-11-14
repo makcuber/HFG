@@ -147,7 +147,7 @@ void OPCSerial::processOPCCommands() {
                       float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
                       cb = String(float_callback(OPCItemList[i].itemID,opc_opread,NULL));
                       verboseControl->debugMsg(cb);
-                      commControl->SerialWriteS(*commID,String(float_callback(OPCItemList[i].itemID,opc_opread,NULL)));
+                      commControl->SerialWriteS(*commID,cb);
                       break;
           }
 
