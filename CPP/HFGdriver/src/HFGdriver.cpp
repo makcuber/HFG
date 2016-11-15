@@ -51,7 +51,6 @@ opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel)
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
 
 //function declarations
-void clusterfuck();
 void secret();
 
 void bluetooth();
@@ -59,10 +58,6 @@ void bluetoothRead();
 void bluetoothWrite(String msg);
 
 //Eastereggs
-
-void clusterfuck() {
-  verboseControl.verboseMsg("Gabe made me write this function");
-}
 void secret(){
   //hide something fun here :)
 }
