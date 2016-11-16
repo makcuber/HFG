@@ -21,6 +21,7 @@
  * UD: 4/03/11/2016
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -40,7 +41,7 @@
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=0;
+int opcChannel=1;
 
 //Define Control objects
 CommControl commControl;
@@ -113,9 +114,12 @@ void loop() {
       if(verboseControl.verboseLevel[0]>1){
         commandControl.usbComm();
       }
+      if(verboseControl.verboseLevel[1]>1){
+        commandControl.btComm();
+      }
 
       //Bluetooth Communication
-      commandControl.btComm();
+      //commandControl.btComm();
       //push Bluetooth communications to USB communications
       /*
       if (commControl.btEnabled) {

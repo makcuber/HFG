@@ -14,6 +14,7 @@
  * UD: 4/03/11/2016
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -114,10 +115,14 @@ void OPCSerial::processOPCCommands() {
       //verboseControl->debugMsg("OPC Buffer: "+String(buffer[0]));
       if (buffer[0] == '\0')
         sendOPCItemsMap();
+
       else {
 
         // Lets search for read
+        verboseControl->debugMsg("OPC Buffer: "+String(buffer));
         for (int i = 0; i < OPCItemsCount; i++) {
+          //verboseControl->debugMsg("OPC Read Item Tested: "+String(OPCItemList[i].itemID));
+
          if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
           verboseControl->debugMsg("OPC Buffer: "+String(buffer));
           verboseControl->debugMsg("OPC Item ID: "+String(OPCItemList[i].itemID));
@@ -158,9 +163,11 @@ void OPCSerial::processOPCCommands() {
 
         if (!matched) {
           // Lets search for write
+          verboseControl->debugMsg("OPC Buffer: "+String(buffer));
           p = strtok_r(buffer,"=",&j);
           verboseControl->debugMsg("OPC Write CMD: "+String(p));
           for (int i = 0; i < OPCItemsCount; i++) {
+            //verboseControl->debugMsg("OPC Write Item Tested: "+String(OPCItemList[i].itemID));
             if (!strncmp(p, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
               verboseControl->debugMsg("OPC Item: "+String(OPCItemList[i].itemID));
               // Call the stored handler function for the command
@@ -198,8 +205,11 @@ void OPCSerial::processOPCCommands() {
     }
     else {
       if (bufPos < SERIALCOMMAND_BUFFER) {
+        verboseControl->debugMsg("OPC Buffer Position: "+String(bufPos));
         buffer[bufPos++] = inChar;
         buffer[bufPos] = '\0';
+        verboseControl->debugMsg("OPC Buffer: "+String(buffer));
+        verboseControl->debugMsg("OPC Buffer Position: "+String(bufPos));
       }
     }
   }
