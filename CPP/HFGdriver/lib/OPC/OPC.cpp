@@ -115,16 +115,22 @@ void OPCSerial::processOPCCommands() {
       //verboseControl->debugMsg("OPC Buffer: "+String(buffer[0]));
       if (buffer[0] == '\0')
         sendOPCItemsMap();
-
       else {
-
         // Lets search for read
-        verboseControl->debugMsg("OPC Buffer: "+String(buffer));
+        verboseControl->debugMsg("OPC Buffer Old: "+String(buffer));
+
+        //Shift buffer back 1 position to overwrite a random '\r' that appears
+        char c[SERIALCOMMAND_BUFFER+1];
+        for(int i=1;i<SERIALCOMMAND_BUFFER+1;i++){
+          c[i-1]=buffer[i];
+        }
+        strcpy(buffer, c);
+
+        verboseControl->debugMsg("OPC Buffer New: "+String(buffer));
         for (int i = 0; i < OPCItemsCount; i++) {
           //verboseControl->debugMsg("OPC Read Item Tested: "+String(OPCItemList[i].itemID));
 
          if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
-          verboseControl->debugMsg("OPC Buffer: "+String(buffer));
           verboseControl->debugMsg("OPC Item ID: "+String(OPCItemList[i].itemID));
           verboseControl->debugMsg("OPC Item Type: "+String(OPCItemList[i].itemType));
           // Execute the stored handler function for the command
@@ -205,7 +211,6 @@ void OPCSerial::processOPCCommands() {
     }
     else {
       if (bufPos < SERIALCOMMAND_BUFFER) {
-        verboseControl->debugMsg("OPC Buffer Position: "+String(bufPos));
         buffer[bufPos++] = inChar;
         buffer[bufPos] = '\0';
         verboseControl->debugMsg("OPC Buffer: "+String(buffer));

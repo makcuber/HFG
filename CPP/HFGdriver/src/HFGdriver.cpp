@@ -42,12 +42,13 @@
 //values - place global variables here
 char runMode = 'n';
 int opcChannel=1;
+int resetPin=2;
 
 //Define Control objects
 CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
-BootControl bootControl(&commControl,&verboseControl,&motorControl);
+BootControl bootControl(&commControl,&verboseControl,&motorControl, &resetPin);
 opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
 
@@ -74,6 +75,7 @@ void setup() {
       bootControl.boot();
       opcControl.enabled=true;
       opcControl.setup();
+      commandControl.opcChannel=&opcChannel;
       break;
   }
 }

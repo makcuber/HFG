@@ -17,6 +17,7 @@
  * UD: 4/03/11/2016
  * UP: 2/08/11/2016
  * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -119,9 +120,9 @@ void VerboseControl::showMenu(int m) {
   verboseMsg("------------------");
   switch (m) {
     case 0:
-      verboseMsg("1 = Stop Motor");
+      verboseMsg("1 = Stop All Motors");
       verboseMsg("2 = Toggle Motor State");
-      verboseMsg("3 = Set BT verbose");
+      verboseMsg("3 = Toggle OPC channel verbose");
       verboseMsg("4 = Turn on motor x");
       verboseMsg("5 = Clear");
       verboseMsg("6 = Re-Initialize");

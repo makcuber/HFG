@@ -49,6 +49,7 @@ class CommandControl {
     String cmdS,valS;
     int btMode;
     int usbMode;
+    int *opcChannel;
 
     int usbChannel;
     int bluetoothChannel;

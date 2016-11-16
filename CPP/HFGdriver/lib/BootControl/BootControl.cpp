@@ -28,12 +28,29 @@
 
 #include "BootControl.h"
 
-BootControl::BootControl(CommControl *cc, VerboseControl *vc, MotorControl *mc){
+BootControl::BootControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, int *pin){
   commControl=cc;
   verboseControl=vc;
   motorControl=mc;
+  resetPin=pin;
 }
-
+void BootControl::reset(int n){
+  if(n>0){
+    verboseControl->verboseMsg("System will shut down in "+String(n)+" seconds");
+    delay(n*1000);
+    verboseControl->verboseMsg("System will now shut down");
+  } else{
+    verboseControl->verboseMsg("System is going down NOW!");
+    verboseControl->verboseMsg("---------------------------------");
+    verboseControl->verboseMsg("\r");
+  }
+  delay(resetDelay);
+  pinMode(*resetPin, OUTPUT);
+  digitalWrite(*resetPin, HIGH);
+}
+void BootControl::killReset(){
+  pinMode(*resetPin, INPUT); //set the pin as an Input to halt the reset signal
+}
 void BootControl::btBoot() {
   // Open serial communications:
   Serial.begin(9600);
@@ -55,6 +72,7 @@ void BootControl::boot() {
   verboseControl->setVerboseLevel(3, 0);
   verboseControl->setVerboseLevel(1, 1);
 
+  verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("Serial Communications Established");
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("CommPort\t|Status\t|Verbose");
@@ -62,6 +80,9 @@ void BootControl::boot() {
   for (int i = 0; i < commControl->maxComms; i++) {
     verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(commControl->getCommStatus(i)) + "\t|" + String(verboseControl->verboseEnabled[i]));
   }
+  verboseControl->verboseMsg("-----------------------------------");
+  killReset();
+  verboseControl->verboseMsg("Kill reset signal");
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("");
 
@@ -90,6 +111,4 @@ void BootControl::boot() {
   verboseControl->verboseMsg("-----------------------------------");
   motorControl->motorChangeVerbose = true;
   verboseControl->verboseMsg("Initialization COMPLETE\n");
-
-  //clusterfuck();
 }

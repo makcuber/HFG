@@ -18,6 +18,7 @@
  * UD: 4/03/11/2016
  * UD: 6/12/11/2016
  * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -145,12 +146,12 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 3:
      verboseControl->verboseMsg("USB cmd#3");
-     if(verboseControl->verboseLevel[0]>0){
-       verboseControl->setVerboseLevel(0, 0);
+     if(verboseControl->verboseLevel[*opcChannel]>0){
+       verboseControl->setVerboseLevel(0, *opcChannel);
      }else{
-       verboseControl->setVerboseLevel(1, 0);
+       verboseControl->setVerboseLevel(1,*opcChannel);
      }
-     verboseControl->verboseMsg("Comm #0 Verbose Level set to: "+String(verboseControl->verboseLevel[0]));
+     verboseControl->verboseMsg("Comm #"+String(*opcChannel)+" Verbose Level set to: "+String(verboseControl->verboseLevel[*opcChannel]));
 
      break;
     case 4:
@@ -163,7 +164,11 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 6:
       verboseControl->verboseMsg("USB cmd#6");
-      bootControl->boot();
+      if(val>=0){
+        bootControl->reset(val);
+      } else {
+        bootControl->reset(0);
+      }
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");

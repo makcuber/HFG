@@ -38,16 +38,20 @@ class BootControl {
     //constants - declare values that will remain constant throughout the program here
 
     //pinout - declare pins to be used here
+    int *resetPin;
 
     //values - place class variables here
 
     //Functions
-    BootControl(CommControl *cc, VerboseControl *vc, MotorControl *mc);
+    BootControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, int *pin);
 
     void btBoot();
     void boot();
+    void reset(int n);
 
   private:
+    void killReset();
+    const static int resetDelay = 100;
 
 };
 
