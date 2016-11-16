@@ -17,6 +17,7 @@
  * UD: 3/02/11/2016
  * UD: 4/03/11/2016
  * UD: 6/12/11/2016
+ * UD: 3/16/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -43,8 +44,7 @@ class CommControl{
 
     //values - place class variables here
     bool commState[maxComms];
-    String cmdS;
-    String valS;
+    bool commCmd[maxComms];
 
     CommControl();
 

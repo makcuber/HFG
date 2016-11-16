@@ -19,6 +19,7 @@
  * UD: 6/12/11/2016
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
+ * UD: 3/16/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -56,7 +57,7 @@ void CommandControl::cmdSort(int mode, String cmdS, String valS) {
       break;
     case 1:
       //verboseControl->verboseMsg("commMode#1");
-      btcmd(cmdS, valS);
+      //btcmd(cmdS, valS);
       break;
     case 2:
       //verboseControl->verboseMsg("commMode#2");
@@ -88,32 +89,11 @@ void CommandControl::btComm() {
   cmdS = "-1";
   valS = "-1";
 }
-void CommandControl::btcmd(String cmdS, String valS) {
-  int cmd = cmdS.toInt();
-  //int val = valS.toInt();
-  switch (cmd) {
-    case 0:
-     verboseControl->verboseMsg("BT cmd#0");
-     verboseControl->showMenu(btMode);
-      break;
-    case 1:
-     verboseControl->verboseMsg("BT cmd#1");
-      break;
-    case 2:
-     verboseControl->verboseMsg("BT cmd#2");
-      break;
-    case 3:
-     verboseControl->verboseMsg("BT cmd#3");
-      break;
-    case 4:
-     verboseControl->verboseMsg("BT cmd#4");
-      break;
-    case 5:
-     verboseControl->verboseMsg("BT cmd#5");
-      break;
-    default:
-      //WARNING: code placed here will run on every cycle that you dont send a command
-      break;
+void CommandControl::cmdProcess(String *input[], cmdGroup *cg) {
+  for(int i=0;i<cg->CmdCount();i++){
+    if (*input[0]==cg->CMD(i)->id) {
+       verboseControl->verboseMsg(String(cg->name)+" cmd#"+String(i));
+    }
   }
 }
 void CommandControl::usbComm() {

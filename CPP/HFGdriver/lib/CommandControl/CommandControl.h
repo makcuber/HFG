@@ -17,6 +17,8 @@
  * UD: 4/03/11/2016
  * UD: 6/12/11/2016
  * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
+ * UD: 3/16/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -33,6 +35,12 @@
 #include <BootControl.h>
 //#include <opcControl.h>
 
+struct cmd{
+  String id;
+  String description;
+  int pnt_callback;
+};
+
 class CommandControl {
   public:
     //Inherited object
@@ -43,6 +51,8 @@ class CommandControl {
     //opcControl *opcControl;
 
     //constants - declare values that will remain constant throughout the program here
+    const static int maxCmds=8;
+    const static int maxComms=4;
 
     //values - place class variables here
     int mode;
@@ -56,12 +66,27 @@ class CommandControl {
 
     bool opcEnabled;
 
+    class cmdGroup{
+      public:
+        String name;
+
+
+        cmdGroup(String *s, cmd *cmd0);
+        void swapCmdPos(int a, int b);
+        cmd *CMD(int n);
+        int CmdCount();
+      private:
+        int cmdCount;
+        cmd *cmds[maxCmds];
+    };
+
+    cmdGroup *cmdGroups[maxComms];
     //Functions
     CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
 
     void cmdSort(int mode, String cmdS, String valS);
     void btComm();
-    void btcmd(String cmdS, String valS);
+    void cmdProcess(String *input[maxCmds], cmdGroup *cg);
     void usbComm();
     void usbcmd(String cmdS, String valS);
   private:

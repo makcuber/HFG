@@ -18,6 +18,7 @@
  * UP: 2/08/11/2016
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
+ * UD: 3/16/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -115,18 +116,18 @@ void VerboseControl::clearConsole() {
   }
 }
 void VerboseControl::showMenu(int m) {
-  verboseMsg("------------------");
-  verboseMsg("Help");
-  verboseMsg("------------------");
   switch (m) {
     case 0:
+      verboseMsg("------------------");
+      verboseMsg("Help");
+      verboseMsg("------------------");
       verboseMsg("1 = Stop All Motors");
-      verboseMsg("2 = Toggle Motor State");
+      verboseMsg("2 = Toggle Motor State (int motorId)");
       verboseMsg("3 = Toggle OPC channel verbose");
-      verboseMsg("4 = Turn on motor x");
+      verboseMsg("4 = Turn on motor x (int motorId)");
       verboseMsg("5 = Clear");
-      verboseMsg("6 = Re-Initialize");
-      verboseMsg("7 = Toggle OPC");
+      verboseMsg("6 = Reset System (int delay)");
+      //verboseMsg("7 = Toggle OPC");
       break;
     default:
       break;
