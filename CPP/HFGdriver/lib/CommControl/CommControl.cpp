@@ -29,7 +29,7 @@
 
 CommControl::CommControl(){
   int tmp[]={300,1200,2400,4800,9600,19200};
-  for(int i=0;i<maxBaud;i++){
+  for(int i=0;i<MAX_BAUD;i++){
     baudRates[i]=tmp[i];
   }
   btEnabled = true;
@@ -43,19 +43,19 @@ void CommControl::connectComm(int comm) {
   switch (comm) {
     case 0:
       Serial.begin(commBaud[0]);
-      commState[0] = Serial.available();
+      serialState[0] = Serial.available();
       break;
     case 1:
       Serial1.begin(commBaud[1]);
-      commState[1] = Serial1.available();
+      serialState[1] = Serial1.available();
       break;
     case 2:
       Serial2.begin(commBaud[2]);
-      commState[2] = Serial2.available();
+      serialState[2] = Serial2.available();
       break;
     case 3:
       Serial3.begin(commBaud[3]);
-      commState[3] = Serial3.available();
+      serialState[3] = Serial3.available();
       break;
     default:
       break;
@@ -64,19 +64,19 @@ void CommControl::connectComm(int comm) {
 bool CommControl::getCommStatus(int comm) {
   switch (comm) {
     case 0:
-      commState[0] = Serial.available();
+      serialState[0] = Serial.available();
       return Serial.available();
       break;
     case 1:
-      commState[1] = Serial1.available();
+      serialState[1] = Serial1.available();
       return Serial1.available();
       break;
     case 2:
-      commState[2] = Serial2.available();
+      serialState[2] = Serial2.available();
       return Serial2.available();
       break;
     case 3:
-      commState[3] = Serial3.available();
+      serialState[3] = Serial3.available();
       return Serial3.available();
       break;
     default:
@@ -88,41 +88,41 @@ void CommControl::disconnectComm(int comm) {
   switch (comm) {
     case 0:
       Serial.end();
-      commState[0] = Serial.available();
+      serialState[0] = Serial.available();
       break;
     case 1:
       Serial1.end();
-      commState[1] = Serial1.available();
+      serialState[1] = Serial1.available();
       break;
     case 2:
       Serial2.end();
-      commState[2] = Serial2.available();
+      serialState[2] = Serial2.available();
       break;
     case 3:
       Serial3.end();
-      commState[3] = Serial3.available();
+      serialState[3] = Serial3.available();
       break;
     default:
       break;
   }
 }
 void CommControl::setAllCommBaud(int baud) {
-  for (int i = 0; i < maxComms; i++) {
+  for (int i = 0; i < MAX_COMMS; i++) {
     commBaud[i] = baud;
   }
 }
 void CommControl::reconnectAllComms() {
-  for (int i = 0; i < maxComms; i++) {
+  for (int i = 0; i < MAX_COMMS; i++) {
     reconnectComm(i);
   }
 }
 void CommControl::connectAllComms() {
-  for (int i = 0; i < maxComms; i++) {
+  for (int i = 0; i < MAX_COMMS; i++) {
     connectComm(i);
   }
 }
 void CommControl::disconnectAllComms() {
-  for (int i = 0; i < maxComms; i++) {
+  for (int i = 0; i < MAX_COMMS; i++) {
     disconnectComm(i);
   }
 }

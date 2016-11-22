@@ -77,7 +77,7 @@ void BootControl::boot() {
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("CommPort\t|Status\t|Verbose");
   verboseControl->verboseMsg("---------------------------------");
-  for (int i = 0; i < commControl->maxComms; i++) {
+  for (int i = 0; i < MAX_COMMS; i++) {
     verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(commControl->getCommStatus(i)) + "\t|" + String(verboseControl->verboseEnabled[i]));
   }
   verboseControl->verboseMsg("-----------------------------------");
@@ -88,7 +88,8 @@ void BootControl::boot() {
 
   verboseControl->verboseMsg("Initializing System");
   verboseControl->verboseMsg("-------------------");
-
+  verboseControl->verboseMsg("Configuring CommPort Access");
+  verboseControl->verboseMsg("-------------------");
   //configure motors pins for each motor
   verboseControl->verboseMsg("Configuring motor pins...");
   verboseControl->verboseMsg("-----------------------------------");

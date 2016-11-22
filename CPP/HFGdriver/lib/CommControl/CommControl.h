@@ -29,22 +29,27 @@
 
 #include <Arduino.h>
 
+#define MAX_COMMS 4
+#define MAX_BAUD 6
+
+enum channelType{
+  usbChannel,
+  bluetoothChannel,
+  wifiChannel,
+  ethernetChannel
+};
+
 class CommControl{
   public:
     //Inherited objects
 
-    //Constants
-    static const int maxComms = 4;
-    static const int maxBaud = 6;
-
     //Serial variables
-    int commBaud[maxComms];
-    int baudRates[maxBaud];
+    int commBaud[MAX_COMMS];
+    int baudRates[MAX_BAUD];
     bool btEnabled;
 
     //values - place class variables here
-    bool commState[maxComms];
-    bool commCmd[maxComms];
+    bool serialState[MAX_COMMS];
 
     CommControl();
 

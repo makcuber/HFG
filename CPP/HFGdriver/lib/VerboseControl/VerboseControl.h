@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UP: 2/08/11/2016
  * UD: 1/14/11/2016
+ * UD: 1/21/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -28,6 +29,12 @@
 #include <Arduino.h>
 #include <CommControl.h>
 
+struct menuItem{
+    String id, description;
+    menuItem(String *id, String *desc);
+    menuItem();
+};
+
 class VerboseControl {
   public:
     //Inherited object
@@ -39,9 +46,9 @@ class VerboseControl {
 
     //Variables
     int defaultClearWidth;
-    bool verboseEnabled[maxComms]; //replace with vector and set size in class init using commControl->maxComms
-    bool debugEnabled[maxComms]; //replace with vector and set size in class init using commControl->maxComms
-    int verboseLevel[maxComms];
+    bool verboseEnabled[MAX_COMMS]; //replace with vector and set size in class init using MAX_COMMS
+    bool debugEnabled[MAX_COMMS]; //replace with vector and set size in class init using MAX_COMMS
+    int verboseLevel[MAX_COMMS];
 
     VerboseControl(CommControl *cc);
 

@@ -20,6 +20,7 @@
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
  * UD: 3/16/11/2016
+ * UD: 1/21/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -27,6 +28,53 @@
 */
 
 #include "CommandControl.h"
+
+//
+cmd::cmd(String *id, String *desc, int *callback){
+  item=new menuItem(id,desc);
+}
+
+//
+
+cmdGroup::cmdGroup(String *s, cmd *cmd0, VerboseControl *vc){
+  cmds[0]=cmd0;
+  name=*s;
+  verboseControl=vc;
+}
+bool cmdGroup::swapCmdPos(int a, int b){
+  if((a>=0)&(a<MAX_CMDS)){
+    if((b>=0)&(b<MAX_CMDS)){
+      cmd *tmpC=cmds[a];
+      cmds[a]=cmds[b];
+      cmds[b]=tmpC;
+      delete tmpC;
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+cmd *cmdGroup::CMD(int n){
+  if((n>=0)&(n<MAX_CMDS)){
+    return cmds[n];
+  }
+}
+int cmdGroup::CmdCount(){
+  return cmdCount;
+}
+void cmdGroup::PrintMenu() {
+  verboseControl->verboseMsg("------------------");
+  verboseControl->verboseMsg(name);
+  verboseControl->verboseMsg("------------------");
+  for(int i=0;i<CmdCount();i++){
+    verboseControl->verboseMsg(CMD(i)->item->id+" = "+CMD(i)->item->description);
+  }
+  verboseControl->verboseMsg("------------------");
+}
+
+
 
 //Command Processing
 
@@ -37,18 +85,17 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
   bootControl=bc;
   //opcControl=oc;
 
-  bluetoothChannel=1;
-  usbChannel=0;
-
   mode = 0;
 
   btMode = 0;
   usbMode = 0;
+  for(int i=0;i<MAX_COMMS;i++){
+    commCmd[i]=false;
+  }
 
   cmdS = "-1";
   valS = "-1";
 }
-
 void CommandControl::cmdSort(int mode, String cmdS, String valS) {
   switch (mode) {
     case 0:
@@ -91,7 +138,7 @@ void CommandControl::btComm() {
 }
 void CommandControl::cmdProcess(String *input[], cmdGroup *cg) {
   for(int i=0;i<cg->CmdCount();i++){
-    if (*input[0]==cg->CMD(i)->id) {
+    if (*input[0]==cg->CMD(i)->item->id) {
        verboseControl->verboseMsg(String(cg->name)+" cmd#"+String(i));
     }
   }

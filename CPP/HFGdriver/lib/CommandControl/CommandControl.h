@@ -19,6 +19,7 @@
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
  * UD: 3/16/11/2016
+ * UD: 1/21/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -35,10 +36,26 @@
 #include <BootControl.h>
 //#include <opcControl.h>
 
+#define MAX_CMDS 8
+
 struct cmd{
-  String id;
-  String description;
+  menuItem *item;
   int pnt_callback;
+  cmd(String *id, String *desc, int *callback);
+};
+
+class cmdGroup{
+  public:
+    String name;
+    VerboseControl *verboseControl;
+    cmdGroup(String *s, cmd *cmd0, VerboseControl *vc);
+    bool swapCmdPos(int a, int b);
+    cmd *CMD(int n);
+    int CmdCount();
+    void PrintMenu();
+  private:
+    int cmdCount;
+    cmd *cmds[MAX_CMDS];
 };
 
 class CommandControl {
@@ -50,10 +67,6 @@ class CommandControl {
     BootControl *bootControl;
     //opcControl *opcControl;
 
-    //constants - declare values that will remain constant throughout the program here
-    const static int maxCmds=8;
-    const static int maxComms=4;
-
     //values - place class variables here
     int mode;
     String cmdS,valS;
@@ -61,35 +74,24 @@ class CommandControl {
     int usbMode;
     int *opcChannel;
 
-    int usbChannel;
-    int bluetoothChannel;
+    bool commCmd[MAX_COMMS];
 
     bool opcEnabled;
 
-    class cmdGroup{
-      public:
-        String name;
-
-
-        cmdGroup(String *s, cmd *cmd0);
-        void swapCmdPos(int a, int b);
-        cmd *CMD(int n);
-        int CmdCount();
-      private:
-        int cmdCount;
-        cmd *cmds[maxCmds];
-    };
-
-    cmdGroup *cmdGroups[maxComms];
+    cmdGroup *internalCMDS;
     //Functions
     CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
 
+    void PrintCMDmenu(cmdGroup *cg);
     void cmdSort(int mode, String cmdS, String valS);
     void btComm();
-    void cmdProcess(String *input[maxCmds], cmdGroup *cg);
+    void cmdProcess(String *input[], cmdGroup *cg);
     void usbComm();
     void usbcmd(String cmdS, String valS);
   private:
-
+    cmdGroup *motorCMDS;
+    cmdGroup *verboseCMDS;
+    cmdGroup *commCMDS;
+    cmdGroup *bootCMDS;
 };
 #endif
