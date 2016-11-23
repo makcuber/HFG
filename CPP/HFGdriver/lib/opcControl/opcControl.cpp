@@ -33,7 +33,7 @@ opcControl::opcControl(VerboseControl *vc, CommControl *cc, MotorControl *mc, in
 }
 void opcControl::setup(){
   serialOPC->setup();
-  for(int i=0;i<motorControl->maxMotors;i++){
+  for(int i=0;i<MAX_MOTORS;i++){
     String str = "Motor"+String(i);
     const char *c=str.c_str();
     verboseControl->debugMsg("Added OPC Item "+str);

@@ -50,7 +50,7 @@ PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc, int n){
 
 pulse PatternControl::getPulseAllMotors(int duration, bool state){
   pulse p;
-  for(int i=0;i<maxMotors;i++){
+  for(int i=0;i<MAX_MOTORS;i++){
     p.motorIDs[i]=true;
   }
   p.duration=duration;

@@ -21,6 +21,8 @@
  * UD: 2/15/11/2016
  * UD: 3/16/11/2016
  * UD: 1/21/11/2016
+ * UP: 2/22/11/2016
+ * UP: 3/23/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -199,6 +201,9 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
+      for(int i=0;i<MAX_MOTORS;i++){
+        motorControl->toggleMotor(i);
+      }
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command

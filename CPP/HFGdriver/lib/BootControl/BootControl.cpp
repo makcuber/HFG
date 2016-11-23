@@ -20,6 +20,8 @@
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
+ * UP: 2/22/11/2016
+ * UP: 3/23/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -70,7 +72,7 @@ void BootControl::boot() {
 
   //set comm port states
   verboseControl->setVerboseLevel(3, 0);
-  verboseControl->setVerboseLevel(1, 1);
+  verboseControl->setVerboseLevel(3, 1);
 
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("Serial Communications Established");
@@ -96,7 +98,7 @@ void BootControl::boot() {
   verboseControl->verboseMsg("Loop#\t|motorPin\t|motorState");
   verboseControl->verboseMsg("-----------------------------------");
   motorControl->motorChangeVerbose = false;
-  for (int i = 0; i < motorControl->maxMotors; i++) {
+  for (int i = 0; i < MAX_MOTORS; i++) {
 
     //set motor pin number
     motorControl->motorPin[i] = motorControl->startMotorPin + i;

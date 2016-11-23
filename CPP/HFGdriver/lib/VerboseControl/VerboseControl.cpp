@@ -20,6 +20,8 @@
  * UD: 2/15/11/2016
  * UD: 3/16/11/2016
  * UD: 1/21/11/2016
+ * UP: 2/22/11/2016
+ * UP: 3/23/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -127,7 +129,7 @@ void VerboseControl::showMenu(int m) {
       verboseMsg("4 = Turn on motor x (int motorId)");
       verboseMsg("5 = Clear");
       verboseMsg("6 = Reset System (int delay)");
-      //verboseMsg("7 = Toggle OPC");
+      verboseMsg("7 = Toggle all motors");
       break;
     default:
       break;

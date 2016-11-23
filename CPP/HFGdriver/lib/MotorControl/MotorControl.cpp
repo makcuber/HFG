@@ -14,6 +14,7 @@
  * DC: 6/15/10/2016
  * UP: 1/17/10/2016
  * UP: 2/18/10/2016
+ * UP: 3/23/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -33,12 +34,12 @@ void MotorControl::toggleMotor(int motorID) {
 }
 void MotorControl::killAll() {
   motorChangeVerbose = false;
-  for (int i = 0; i < maxMotors; i++) {
+  for (int i = 0; i < MAX_MOTORS; i++) {
     setMotorState(i, false);
   }
   verboseControl->verboseMsg("Motor State Change");
   verboseControl->verboseMsg("------------------");
-  verboseControl->verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[maxMotors - 1]));
+  verboseControl->verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[MAX_MOTORS - 1]));
   verboseControl->verboseMsg("MotorState:" + String(motorState[0]));
   motorChangeVerbose = true;
 }

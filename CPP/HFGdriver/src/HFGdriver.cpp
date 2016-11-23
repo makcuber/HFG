@@ -23,6 +23,8 @@
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
  * UD: 3/16/11/2016
+ * UP: 2/22/11/2016
+ * UP: 3/23/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -42,7 +44,7 @@
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=1;
+int opcChannel=2;
 int resetPin=2;
 
 //Define Control objects

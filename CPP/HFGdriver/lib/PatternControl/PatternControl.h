@@ -40,8 +40,8 @@ class PatternControl {
     //values - place class variables here
     struct motorArray{
       int width,length;
-      std::vector<int> xIDs(motorControl->maxMotors);
-      std::vector<int> yIDs(motorControl->maxMotors);
+      std::vector<int> xIDs(MAX_MOTORS);
+      std::vector<int> yIDs(MAX_MOTORS);
     }testArray;
 
     struct pulse{
