@@ -43,6 +43,17 @@ void MotorControl::killAll() {
   verboseControl->verboseMsg("MotorState:" + String(motorState[0]));
   motorChangeVerbose = true;
 }
+void MotorControl::toggleAll() {
+  motorChangeVerbose = false;
+  for (int i = 0; i < MAX_MOTORS; i++) {
+    setMotorState(i, true);
+  }
+  verboseControl->verboseMsg("Motor State Change");
+  verboseControl->verboseMsg("------------------");
+  verboseControl->verboseMsg("MotorPin:" + String(motorPin[0]) + " - " + String(motorPin[MAX_MOTORS - 1]));
+  verboseControl->verboseMsg("MotorState:" + String(motorState[0]));
+  motorChangeVerbose = true;
+}
 void MotorControl::setMotorState(int motorID, bool state) {
   if (state) {
     motorState[motorID] = true;

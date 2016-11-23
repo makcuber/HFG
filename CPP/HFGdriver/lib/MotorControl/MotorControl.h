@@ -48,6 +48,7 @@ class MotorControl{
 
     void toggleMotor(int motorID);
     void killAll();
+    void toggleAll();
     void setMotorState(int motorID, bool state);
 
   private:

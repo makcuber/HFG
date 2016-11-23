@@ -201,9 +201,7 @@ void CommandControl::usbcmd(String cmdS, String valS) {
       break;
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
-      for(int i=0;i<MAX_MOTORS;i++){
-        motorControl->toggleMotor(i);
-      }
+      motorControl->toggleAll();
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command
