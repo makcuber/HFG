@@ -65,7 +65,7 @@ void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, op
     OPCItemList[OPCItemsCount].ptr_callback = callback_function;
     OPCItemsCount++;
   } else {
-     verboseControl->verboseMsg(F("Not enough memory"));
+     verboseControl->verboseMsg("Not enough memory");
   }
 
 }
@@ -108,7 +108,7 @@ void OPCSerial::processOPCCommands() {
   int (*int_callback)(const char *itemID, const opcOperation opcOP, const int value);
   float (*float_callback)(const char *itemID, const opcOperation opcOP, const float value);
 
-  while (commControl->getCommStatus(*commID) > 0) {
+  while (commControl->getCommStatus(*commID)) {
     char inChar = commControl->SerialReadB(*commID);
     verboseControl->debugMsg("OPC inChar: "+String(inChar));
     if (inChar == '\r') {
@@ -125,6 +125,7 @@ void OPCSerial::processOPCCommands() {
           c[i-1]=buffer[i];
         }
         strcpy(buffer, c);
+        delete[] c;
 
         verboseControl->debugMsg("OPC Buffer New: "+String(buffer));
         for (int i = 0; i < OPCItemsCount; i++) {

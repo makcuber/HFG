@@ -17,6 +17,7 @@
  * UD: 6/12/11/2016
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
+ * UD: 5/25/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -43,19 +44,15 @@ void CommControl::connectComm(int comm) {
   switch (comm) {
     case 0:
       Serial.begin(commBaud[0]);
-      serialState[0] = Serial.available();
       break;
     case 1:
       Serial1.begin(commBaud[1]);
-      serialState[1] = Serial1.available();
       break;
     case 2:
       Serial2.begin(commBaud[2]);
-      serialState[2] = Serial2.available();
       break;
     case 3:
       Serial3.begin(commBaud[3]);
-      serialState[3] = Serial3.available();
       break;
     default:
       break;
@@ -64,19 +61,15 @@ void CommControl::connectComm(int comm) {
 bool CommControl::getCommStatus(int comm) {
   switch (comm) {
     case 0:
-      serialState[0] = Serial.available();
       return Serial.available();
       break;
     case 1:
-      serialState[1] = Serial1.available();
       return Serial1.available();
       break;
     case 2:
-      serialState[2] = Serial2.available();
       return Serial2.available();
       break;
     case 3:
-      serialState[3] = Serial3.available();
       return Serial3.available();
       break;
     default:
@@ -88,19 +81,15 @@ void CommControl::disconnectComm(int comm) {
   switch (comm) {
     case 0:
       Serial.end();
-      serialState[0] = Serial.available();
       break;
     case 1:
       Serial1.end();
-      serialState[1] = Serial1.available();
       break;
     case 2:
       Serial2.end();
-      serialState[2] = Serial2.available();
       break;
     case 3:
       Serial3.end();
-      serialState[3] = Serial3.available();
       break;
     default:
       break;
@@ -126,8 +115,6 @@ void CommControl::disconnectAllComms() {
     disconnectComm(i);
   }
 }
-
-//Default Run Mode
 
 void CommControl::comm2Comm(int commA, int commB, char mode) {
   String tmpS;
@@ -193,6 +180,25 @@ void CommControl::SerialWriteB(int comm, int msg) {
     }
   }
 }
+String CommControl::SerialReadUntilC(int *comm, char *d) {
+  char tmpC;
+  int bufPos=0;
+  do{
+    while (getCommStatus(*comm)){
+      tmpC = SerialReadB(*comm);
+      if(tmpC!=*d){
+        if (bufPos < SERIAL_BUFFER) {
+          buffer[bufPos++] = tmpC;
+          buffer[bufPos] = '\0';
+        }
+      }
+    }
+  }while(tmpC!=*d);
+
+  return String(buffer);
+  buffer[0] = '\0';
+  bufPos = 0;
+}
 String CommControl::SerialReadS(int comm) {
   switch (comm) {
     case 0:
@@ -240,7 +246,7 @@ void CommControl::SerialWriteS(int comm, String msg) {
     }
   }
 }
-String CommControl::SerialReadUntil(int comm, char c) {
+String CommControl::SerialReadUntilS(int comm, char c) {
   switch (comm) {
     case 0:
       if (getCommStatus(comm)) {

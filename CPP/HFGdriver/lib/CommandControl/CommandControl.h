@@ -22,6 +22,7 @@
  * UD: 1/21/11/2016
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
+ * UD: 5/25/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -36,9 +37,11 @@
 #include <CommControl.h>
 #include <MotorControl.h>
 #include <BootControl.h>
+#include <String.h>
 //#include <opcControl.h>
 
 #define MAX_CMDS 8
+#define MAX_PARAMETERS 3
 
 struct cmd{
   menuItem *item;
@@ -72,12 +75,14 @@ class CommandControl {
     //values - place class variables here
     int mode;
     String cmdS,valS;
-    int btMode;
-    int usbMode;
     int *opcChannel;
 
-    bool commCmd[MAX_COMMS];
+    String parameters[MAX_PARAMETERS];
 
+    int commMode[MAX_COMMS];
+    bool commCmd[MAX_COMMS];
+    char seperator[MAX_COMMS];
+    char delimiter[MAX_COMMS];
     bool opcEnabled;
 
     cmdGroup *internalCMDS;
@@ -85,9 +90,11 @@ class CommandControl {
     CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
 
     void PrintCMDmenu(cmdGroup *cg);
+    void cmdExe(String *input[], cmdGroup *cg);
+    void processCMDs();
+
     void cmdSort(int mode, String cmdS, String valS);
     void btComm();
-    void cmdProcess(String *input[], cmdGroup *cg);
     void usbComm();
     void usbcmd(String cmdS, String valS);
   private:
@@ -95,5 +102,9 @@ class CommandControl {
     cmdGroup *verboseCMDS;
     cmdGroup *commCMDS;
     cmdGroup *bootCMDS;
+    void readComm(int *n);
+    void resetParameters();
+    void parseParameters(int *n, char *c);
+    void cmdProcess(int *n, String *s);
 };
 #endif

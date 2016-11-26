@@ -23,6 +23,7 @@
  * UD: 1/21/11/2016
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
+ * UD: 5/25/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -89,14 +90,55 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
 
   mode = 0;
 
-  btMode = 0;
-  usbMode = 0;
   for(int i=0;i<MAX_COMMS;i++){
     commCmd[i]=false;
+    commMode[i]=0;
   }
 
+  resetParameters();
   cmdS = "-1";
   valS = "-1";
+}
+void CommandControl::processCMDs(){
+  for(int i=0;i<MAX_COMMS;i++){
+    if(commCmd[i]){
+      readComm(&i);
+    }
+  }
+}
+void CommandControl::cmdExe(String *input[], cmdGroup *cg) {
+  for(int i=0;i<cg->CmdCount();i++){
+    if (*input[0]==cg->CMD(i)->item->id) {
+       verboseControl->verboseMsg(String(cg->name)+" cmd#"+String(i));
+    }
+  }
+}
+void CommandControl::resetParameters(){
+  for(int i=0;i<MAX_PARAMETERS;i++){
+    parameters[i]="";
+  }
+}
+void CommandControl::cmdProcess(int *n, String *s){
+
+}
+void CommandControl::parseParameters(int *n, char *c){
+  char *pt;
+  pt = strtok (c,",");
+  while (pt != NULL) {
+      int a = atoi(pt);
+      printf("%d\n", a);
+      pt = strtok (NULL, ",");
+  }
+}
+void CommandControl::readComm(int *n) {
+  String tmpS;
+  while (commControl->getCommStatus(*n)) {
+    tmpS=commControl->SerialReadUntilC(n, &delimiter[*n]);
+  }
+
+  cmdProcess(n, &tmpS);
+  //reset the cmd and val variables for the next cycle
+  resetParameters();
 }
 void CommandControl::cmdSort(int mode, String cmdS, String valS) {
   switch (mode) {
@@ -128,22 +170,15 @@ void CommandControl::cmdSort(int mode, String cmdS, String valS) {
 void CommandControl::btComm() {
   //String cmdS,valS;
   while (commControl->getCommStatus(bluetoothChannel)) {
-    cmdS = commControl->SerialReadUntil(bluetoothChannel,',');
-    valS = commControl->SerialReadUntil(bluetoothChannel,'\n');
+    cmdS = commControl->SerialReadUntilS(bluetoothChannel,',');
+    valS = commControl->SerialReadUntilS(bluetoothChannel,'\n');
   }
 
-  cmdSort(btMode, cmdS, valS);
+  cmdSort(commMode[1], cmdS, valS);
 
   //reset the cmd and val variables for the next cycle
   cmdS = "-1";
   valS = "-1";
-}
-void CommandControl::cmdProcess(String *input[], cmdGroup *cg) {
-  for(int i=0;i<cg->CmdCount();i++){
-    if (*input[0]==cg->CMD(i)->item->id) {
-       verboseControl->verboseMsg(String(cg->name)+" cmd#"+String(i));
-    }
-  }
 }
 void CommandControl::usbComm() {
   while (Serial.available()) {
@@ -151,7 +186,7 @@ void CommandControl::usbComm() {
     valS = Serial.readStringUntil('\n');
   }
 
-  cmdSort(usbMode, cmdS, valS);
+  cmdSort(commMode[0], cmdS, valS);
 
   //reset the cmd and val variables for the next cycle
   cmdS = "-1";
@@ -163,7 +198,7 @@ void CommandControl::usbcmd(String cmdS, String valS) {
   switch (cmd) {
     case 0:
       verboseControl->verboseMsg("USB cmd#0");
-      verboseControl->showMenu(usbMode);
+      verboseControl->showMenu(commMode[0]);
       break;
     case 1:
      verboseControl->verboseMsg("USB cmd#1");

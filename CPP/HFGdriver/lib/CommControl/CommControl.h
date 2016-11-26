@@ -18,6 +18,7 @@
  * UD: 4/03/11/2016
  * UD: 6/12/11/2016
  * UD: 3/16/11/2016
+ * UD: 5/25/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -31,6 +32,7 @@
 
 #define MAX_COMMS 4
 #define MAX_BAUD 6
+#define SERIAL_BUFFER 128
 
 enum channelType{
   usbChannel,
@@ -49,7 +51,7 @@ class CommControl{
     bool btEnabled;
 
     //values - place class variables here
-    bool serialState[MAX_COMMS];
+
 
     CommControl();
 
@@ -59,7 +61,8 @@ class CommControl{
     void SerialWriteB(int comm, int msg);
     String SerialReadS(int comm);
     void SerialWriteS(int comm, String msg);
-    String SerialReadUntil(int comm, char c);
+    String SerialReadUntilS(int comm, char c);
+    String SerialReadUntilC(int *comm, char *d);
 
     void reconnectComm(int comm);
     void connectComm(int comm);
@@ -71,6 +74,6 @@ class CommControl{
     void disconnectAllComms();
 
   private:
-
+    char buffer[SERIAL_BUFFER + 1];
 };
 #endif

@@ -82,7 +82,6 @@ public:
   OPCSerial(VerboseControl *vc, CommControl *cc, int *ID);
   void setup();
   void processOPCCommands();
-  //void sendOPCItemsMap();
 };
 
 class OPCEthernet : public OPC {
