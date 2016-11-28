@@ -13,6 +13,7 @@
  * Dev: Jonathan Brunath
  * DC: 3/19/10/2016
  * UD: 1/14/11/2016
+ * UD: 5/25/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -25,8 +26,61 @@
 #include <Arduino.h>
 #include <VerboseControl.h>
 #include <MotorControl.h>
-#include <stdlib.h>
-#include <vector>
+
+#define MAX_PATTERN_LENGTH 4
+
+struct motorArray1x1{
+  String name;
+  int motorID;
+
+  motorArray1x1(String *s, int *n);
+};
+struct motorArray2x4{
+  String name;
+  const static int width=2;
+  const static int length=4;
+  int xIDs[width];
+  int yIDs[length];;
+
+  motorArray2x4(String *s, int *x[2], int *y[4]);
+};
+
+struct pulse1x1{
+  int duration;
+  bool state;
+
+  pulse1x1(int *d, bool *s);
+};
+struct pulse2x4{
+  int duration;
+  bool state;
+  bool xStates[2];
+  bool yStates[4];
+
+  pulse2x4(int *d, bool *x[2], bool *y[4]);
+};
+
+class pattern1x1{
+  public:
+    String name;
+
+    pattern1x1(String *s);
+    void setPulse(int *duration, bool *state, int *n);
+    pulse1x1 *getPulse(int *n);
+  private:
+    pulse1x1 *pulses[MAX_PATTERN_LENGTH];
+};
+class pattern2x4{
+  public:
+    String name;
+
+
+    pattern2x4(String *s);
+    void setPulse(int *duration, bool *x[2], bool *y[4], int *n);
+    pulse2x4 *getPulse(int *n);
+  private:
+    pulse2x4 *pulses[MAX_PATTERN_LENGTH];
+};
 
 class PatternControl {
   public:
@@ -35,36 +89,12 @@ class PatternControl {
     MotorControl *motorControl;
 
     //constants - declare values that will remain constant throughout the program here
-    static const int maxPatternLength = 4;
 
     //values - place class variables here
-    struct motorArray{
-      int width,length;
-      std::vector<int> xIDs(MAX_MOTORS);
-      std::vector<int> yIDs(MAX_MOTORS);
-    }testArray;
-
-    struct pulse{
-      int duration;
-      bool state;
-      std::vector<bool> xStates;
-      std::vector<bool> yStates;
-    };
 
     //Functions
     PatternControl(VerboseControl *vc, MotorControl *mc);
     PatternControl(VerboseControl *vc, MotorControl *mc, int n);
-
-    pulse getPulseAllMotors(int duration, bool state);
-
-    class pattern{
-      public:
-        String name;
-        motorArray *layout;
-        pulse *pulses[maxPatternLength];
-      private:
-
-    };
 
   private:
 

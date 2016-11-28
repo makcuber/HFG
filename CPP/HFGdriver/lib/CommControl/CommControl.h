@@ -52,7 +52,6 @@ class CommControl{
 
     //values - place class variables here
 
-
     CommControl();
 
     void comm2Comm(int commA, int commB, char mode);
