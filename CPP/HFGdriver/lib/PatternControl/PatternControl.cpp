@@ -14,6 +14,7 @@
  * DC: 3/19/10/2016
  * UD: 1/14/11/2016
  * UD: 5/25/11/2016
+ * UD: 1/28/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -48,11 +49,29 @@ pattern1x1::pattern1x1(String *s){
   name=*s;
 }
 void pattern1x1::setPulse(int *duration, bool *state, int *n){
-  pulse1x1 p(duration,state);
-  pulses[*n]=&p;
+  if((*n<MAX_PATTERN_LENGTH)&(*n>=0)){
+    pulse1x1 p(duration,state);
+    pulses[*n]=&p;
+    pulseState[*n]=true;
+    calcPulseCount();
+  }
 }
 pulse1x1 *pattern1x1::getPulse(int *n){
   return pulses[*n];
+}
+void pattern1x1::calcPulseCount(){
+  pulseCount=0;
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    if(pulseState[i]==true){
+      pulseCount++;
+    }
+  }
+}
+int pattern1x1::PulseCount(){
+  return pulseCount;
+}
+bool pattern1x1::PulseState(int *n){
+  return pulseState[*n];
 }
 
 //2x4
@@ -72,20 +91,53 @@ pattern2x4::pattern2x4(String *s){
   name=*s;
 }
 void pattern2x4::setPulse(int *duration, bool *x[2], bool *y[4], int *n){
-  pulse2x4 p(duration,x,y);
-  pulses[*n]=&p;
+  if((*n<MAX_PATTERN_LENGTH)&(*n>=0)){
+    pulse2x4 p(duration,x,y);
+    pulses[*n]=&p;
+    pulseState[*n]=true;
+  }
 }
 pulse2x4 *pattern2x4::getPulse(int *n){
   return pulses[*n];
 }
-
+void pattern2x4::calcPulseCount(){
+  pulseCount=0;
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    if(pulseState[i]==true){
+      pulseCount++;
+    }
+  }
+}
+int pattern2x4::PulseCount(){
+  return pulseCount;
+}
+bool pattern2x4::PulseState(int *n){
+  return pulseState[*n];
+}
 
 //Pattern Control
 PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc){
   verboseControl=vc;
   motorControl=mc;
 }
-PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc, int n){
-  verboseControl=vc;
-  motorControl=mc;
+void PatternControl::runPattern(motorArray1x1 *mA, pattern1x1 *pat){
+  verboseControl->verboseMsg("Running pattern "+pat->name+" on motor array "+mA->name);
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    if(pat->PulseState(&i)==true){
+      motorControl->setMotorState(mA->motorID, pat->getPulse(&i)->state);
+    }
+  }
+}
+void PatternControl::runPattern(motorArray2x4 *mA, pattern2x4 *pat){
+  verboseControl->verboseMsg("Running pattern "+pat->name+" on motor array "+mA->name);
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    if(pat->PulseState(&i)==true){
+      for(int l=0;l<mA->length;l++){
+          motorControl->setMotorState(mA->yIDs[l], pat->getPulse(&i)->yStates[l]);
+      }
+      for(int w=0;w<mA->width;w++){
+          motorControl->setMotorState(mA->xIDs[w], pat->getPulse(&i)->xStates[w]);
+      }
+    }
+  }
 }

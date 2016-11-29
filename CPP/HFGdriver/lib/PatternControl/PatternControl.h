@@ -14,6 +14,7 @@
  * DC: 3/19/10/2016
  * UD: 1/14/11/2016
  * UD: 5/25/11/2016
+ * UD: 1/28/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -67,18 +68,27 @@ class pattern1x1{
     pattern1x1(String *s);
     void setPulse(int *duration, bool *state, int *n);
     pulse1x1 *getPulse(int *n);
+    int PulseCount();
+    bool PulseState(int *n);
   private:
+    int pulseCount;
+    bool pulseState[MAX_PATTERN_LENGTH];
+    void calcPulseCount();
     pulse1x1 *pulses[MAX_PATTERN_LENGTH];
 };
 class pattern2x4{
   public:
     String name;
 
-
     pattern2x4(String *s);
     void setPulse(int *duration, bool *x[2], bool *y[4], int *n);
     pulse2x4 *getPulse(int *n);
+    int PulseCount();
+    bool PulseState(int *n);
   private:
+    int pulseCount;
+    bool pulseState[MAX_PATTERN_LENGTH];
+    void calcPulseCount();
     pulse2x4 *pulses[MAX_PATTERN_LENGTH];
 };
 
@@ -94,8 +104,9 @@ class PatternControl {
 
     //Functions
     PatternControl(VerboseControl *vc, MotorControl *mc);
-    PatternControl(VerboseControl *vc, MotorControl *mc, int n);
 
+    void runPattern(motorArray1x1 *mA, pattern1x1 *pat);
+    void runPattern(motorArray2x4 *mA, pattern2x4 *pat);
   private:
 
 };
