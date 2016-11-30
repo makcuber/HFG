@@ -23,6 +23,7 @@
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
  * UD: 5/25/11/2016
+ * UD: 2/29/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -37,6 +38,7 @@
 #include <CommControl.h>
 #include <MotorControl.h>
 #include <BootControl.h>
+#include <PatternControl.h>
 #include <String.h>
 //#include <opcControl.h>
 
@@ -70,6 +72,7 @@ class CommandControl {
     VerboseControl *verboseControl;
     MotorControl *motorControl;
     BootControl *bootControl;
+    PatternControl *patternControl;
     //opcControl *opcControl;
 
     //values - place class variables here
@@ -87,7 +90,7 @@ class CommandControl {
 
     cmdGroup *internalCMDS;
     //Functions
-    CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc);
+    CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc, PatternControl *pc);
 
     void PrintCMDmenu(cmdGroup *cg);
     void cmdExe(String *input[], cmdGroup *cg);

@@ -28,7 +28,7 @@
 #include <Arduino.h>
 #include <VerboseControl.h>
 
-#define MAX_MOTORS 18
+#define MAX_MOTORS 17
 #define DEFAULT_MOTOR_START_PIN 22
 
 class MotorControl{

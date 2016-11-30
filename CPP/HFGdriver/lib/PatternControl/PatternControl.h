@@ -105,12 +105,13 @@ class PatternControl {
     int defaultDuration;
 
     //Functions
-    PatternControl(VerboseControl *vc, MotorControl *mc, int *d);
+    PatternControl(VerboseControl *vc, MotorControl *mc, int d);
     void setMotorArrayPins(char c, int ids[2][4], String s);
     void setMotorArrayPins(String s, int p);
     void runPattern(motorArray1x1 *mA, pattern1x1 *pat);
     void runPattern(motorArray2x4 *mA, pattern2x4 *pat);
-    void onOff(int *d, int *n);
+    void onOff(int d, int n);
+    void onOff(int n);
   private:
     motorArray1x1 *gloveMotor;
     motorArray2x4 *motorArrayA,*motorArrayB;

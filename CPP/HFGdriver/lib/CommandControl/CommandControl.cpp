@@ -24,6 +24,7 @@
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
  * UD: 5/25/11/2016
+ * UD: 2/29/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -81,11 +82,12 @@ void cmdGroup::PrintMenu() {
 
 //Command Processing
 
-CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc){
+CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc, PatternControl *pc){
   commControl=cc;
   verboseControl=vc;
   motorControl=mc;
   bootControl=bc;
+  patternControl=pc;
   //opcControl=oc;
 
   mode = 0;
@@ -237,6 +239,10 @@ void CommandControl::usbcmd(String cmdS, String valS) {
     case 7:
       verboseControl->verboseMsg("USB cmd#7");
       motorControl->toggleAll();
+      break;
+    case 8:
+      verboseControl->verboseMsg("USB cmd#8");
+      patternControl->onOff(0);
       break;
     default:
       //WARNING: code placed here will run on every cycle that you dont send a command

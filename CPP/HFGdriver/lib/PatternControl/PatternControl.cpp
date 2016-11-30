@@ -116,10 +116,10 @@ bool pattern2x4::PulseState(int *n){
 }
 
 //Pattern Control
-PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc, int *d){
+PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc, int d){
   verboseControl=vc;
   motorControl=mc;
-  defaultDuration=*d;
+  defaultDuration=d;
 
   //config gloveMotor
   setMotorArrayPins("GloveMotor",defaultGlovePin);
@@ -186,8 +186,11 @@ void PatternControl::setMotorArrayPins(char c, int ids[2][4], String s){
 void PatternControl::setMotorArrayPins(String s, int p){
   gloveMotor=new motorArray1x1(s, p);
 }
-void PatternControl::onOff(int *d, int *n){
-  switch(*n){
+void PatternControl::onOff(int n){
+  onOff(defaultDuration,n);
+}
+void PatternControl::onOff(int d, int n){
+  switch(n){
     case 0:
       runPattern(gloveMotor, onOff1x1);
       break;

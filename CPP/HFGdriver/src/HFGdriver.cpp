@@ -25,6 +25,7 @@
  * UD: 3/16/11/2016
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
+ * UP: 2/29/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -38,7 +39,7 @@
 #include <VerboseControl.h>
 #include <CommandControl.h>
 #include <opcControl.h>
-//#include <PatternControl.h>
+#include <PatternControl.h>
 
 //constants - declare values that will remain constant throughout the program here
 
@@ -53,7 +54,8 @@ VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl, &resetPin);
 opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
-CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl);
+PatternControl patternControl(&verboseControl,&motorControl,500);
+CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl, &patternControl);
 
 //cmd [];
 
@@ -97,7 +99,7 @@ void bluetoothRead() {
     String tmp = Serial1.readString();
 
     //Serial.println(cmdS);
-    commandControl.cmdSort(commandControl.btMode, tmp, "");
+    commandControl.cmdSort(commandControl.commMode[1], tmp, "");
     tmp = ""; // No repeats
   }
 }
@@ -135,7 +137,7 @@ void loop() {
       }
       */
       //OPC
-      opcControl.updateOPC();
+      //opcControl.updateOPC();
       break;
   }
 }
