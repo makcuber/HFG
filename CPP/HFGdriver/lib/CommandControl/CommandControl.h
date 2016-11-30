@@ -88,7 +88,6 @@ class CommandControl {
     char delimiter[MAX_COMMS];
     bool opcEnabled;
 
-    cmdGroup *internalCMDS;
     //Functions
     CommandControl(CommControl *cc, VerboseControl *vc, MotorControl *mc, BootControl *bc, PatternControl *pc);
 

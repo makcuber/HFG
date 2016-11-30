@@ -16,6 +16,7 @@
  * UP: 2/18/10/2016
  * UP: 3/23/11/2016
  * UP: 2/29/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -56,18 +57,20 @@ void MotorControl::toggleAll() {
   motorChangeVerbose = true;
 }
 void MotorControl::setMotorState(int motorID, bool state) {
-  if (state) {
-    motorState[motorID] = true;
-    digitalWrite(motorPin[motorID], HIGH);
-  } else {
-    motorState[motorID] = false;
-    digitalWrite(motorPin[motorID], LOW);
-  }
-  if (motorChangeVerbose) {
-    verboseControl->verboseMsg("Motor State Change");
-    verboseControl->verboseMsg("------------------");
-    verboseControl->verboseMsg("MotorPin:" + String(motorPin[motorID]));
-    verboseControl->verboseMsg("MotorState:" + String(motorState[motorID]));
-    verboseControl->verboseMsg("\n");
+  if((motorID>=0)&(motorID<MAX_MOTORS)){
+    if (state) {
+      motorState[motorID] = true;
+      digitalWrite(motorPin[motorID], HIGH);
+    } else {
+      motorState[motorID] = false;
+      digitalWrite(motorPin[motorID], LOW);
+    }
+    if (motorChangeVerbose) {
+      verboseControl->verboseMsg("Motor State Change");
+      verboseControl->verboseMsg("------------------");
+      verboseControl->verboseMsg("MotorPin:" + String(motorPin[motorID]));
+      verboseControl->verboseMsg("MotorState:" + String(motorState[motorID]));
+      verboseControl->verboseMsg("\n");
+    }
   }
 }

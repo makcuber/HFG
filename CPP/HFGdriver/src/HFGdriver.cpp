@@ -26,6 +26,7 @@
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
  * UP: 2/29/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -53,11 +54,9 @@ CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl, &resetPin);
-opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
+//opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
 PatternControl patternControl(&verboseControl,&motorControl,500);
-CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl, &patternControl);
-
-//cmd [];
+CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl,&patternControl);
 
 //function declarations
 void secret();
@@ -78,10 +77,14 @@ void setup() {
     case 'b':
       bootControl.btBoot();
       break;
+    case 't':
+      Serial.begin(9600);
+      Serial.println("Hello World!");
+      break;
     default:
       bootControl.boot();
-      opcControl.enabled=true;
-      opcControl.setup();
+      //opcControl.enabled=true;
+      //opcControl.setup();
       commandControl.opcChannel=&opcChannel;
       break;
   }
@@ -118,6 +121,11 @@ void loop() {
     case 'b':
       bluetooth();
       break;
+    case 't':
+      while (Serial.available() > 0) {
+        Serial.println(Serial.readStringUntil('\n'));
+      }
+      break;
     default:
       //USB Communication
       if(verboseControl.verboseLevel[0]>1){
@@ -130,12 +138,12 @@ void loop() {
       //Bluetooth Communication
       //commandControl.btComm();
       //push Bluetooth communications to USB communications
-      /*
+
       if (commControl.btEnabled) {
         //comm2Comm(1, 0, 's');
         bluetoothRead();
       }
-      */
+
       //OPC
       //opcControl.updateOPC();
       break;

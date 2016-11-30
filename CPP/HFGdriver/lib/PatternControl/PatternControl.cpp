@@ -16,6 +16,7 @@
  * UD: 5/25/11/2016
  * UD: 1/28/11/2016
  * UP: 2/29/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -41,24 +42,25 @@ motorArray2x4::motorArray2x4(String s,int ids[2][4]){
 //1x1
 
 //pulse1x1
-pulse1x1::pulse1x1(int *d, bool *s){
+void pulse1x1::set(int *d, bool *s){
   duration=*d;
   state=*s;
+}
+pulse1x1::pulse1x1(){
+  duration=DEFAULT_DURATION;
+  state=false;
 }
 //Pattern1x1
 pattern1x1::pattern1x1(String s){
   name=s;
 }
 void pattern1x1::setPulse(int *duration, bool *state, int *n){
-  if((*n<MAX_PATTERN_LENGTH)&(*n>=0)){
-    pulse1x1 p(duration,state);
-    pulses[*n]=&p;
+    pulses[*n].set(duration, state);
     pulseState[*n]=true;
     calcPulseCount();
-  }
 }
 pulse1x1 *pattern1x1::getPulse(int *n){
-  return pulses[*n];
+  return &pulses[*n];
 }
 void pattern1x1::calcPulseCount(){
   pulseCount=0;
@@ -78,11 +80,19 @@ bool pattern1x1::PulseState(int *n){
 //2x4
 
 //pulse2x4
-pulse2x4::pulse2x4(int *d, bool b[2][4]){
+void pulse2x4::set(int *d, bool b[2][4]){
   duration=*d;
   for(int w=0;w<2;w++){
     for(int l=0;l<4;l++){
       States[w][l]=b[w][l];
+    }
+  }
+}
+pulse2x4::pulse2x4(){
+  duration=DEFAULT_DURATION;
+  for(int w=0;w<2;w++){
+    for(int l=0;l<4;l++){
+      States[w][l]=false;
     }
   }
 }
@@ -92,13 +102,12 @@ pattern2x4::pattern2x4(String s){
 }
 void pattern2x4::setPulse(int *duration, bool b[2][4], int *n){
   if((*n<MAX_PATTERN_LENGTH)&(*n>=0)){
-    pulse2x4 p(duration,b);
-    pulses[*n]=&p;
+    pulses[*n].set(duration,b);
     pulseState[*n]=true;
   }
 }
 pulse2x4 *pattern2x4::getPulse(int *n){
-  return pulses[*n];
+  return &pulses[*n];
 }
 void pattern2x4::calcPulseCount(){
   pulseCount=0;
@@ -120,56 +129,96 @@ PatternControl::PatternControl(VerboseControl *vc, MotorControl *mc, int d){
   verboseControl=vc;
   motorControl=mc;
   defaultDuration=d;
+  motorVerbose=false;
 
   //config gloveMotor
-  setMotorArrayPins("GloveMotor",defaultGlovePin);
+  setMotorArrayPins("GloveMotor",defaultGloveID);
 
   //config motorArrayA
   int ids[2][4];
   int c=0;
-  for(int i=0;i<2;i++){
-    for(int k=0;k<4;k++){
-      ids[i][k]=DEFAULT_MOTOR_START_PIN+i;
+  for(int w=0;w<2;w++){
+    for(int l=0;l<4;l++){
+      ids[w][l]=c;
       c++;
     }
   }
-  delete &c;
-  setMotorArrayPins('A',ids,"GloveMotor");
+  setMotorArrayPins('A',ids,"motorArrayA");
 
   //config motorArrayB
-  for(int i=0;i<2;i++){
-    for(int k=0;k<4;k++){
-      ids[i][k]+=8;
+  for(int w=0;w<2;w++){
+    for(int l=0;l<4;l++){
+      ids[w][l]+=8;
     }
   }
+  setMotorArrayPins('B',ids,"motorArrayB");
 
   //config onOff1x1
+  setOnOff1x1(&defaultDuration);
+
+  //config onOff2x4
+  setOnOff2x4(&defaultDuration);
+
+}
+void PatternControl::setOnOff1x1(int *d){
   onOff1x1=new pattern1x1("OnOff");
   bool tmpB=true;
   for(int i=0;i<MAX_PATTERN_LENGTH;i++){
-    onOff1x1->setPulse(&defaultDuration, &tmpB, &i);
+    onOff1x1->setPulse(d, &tmpB, &i);
     tmpB=!tmpB;
   }
 }
+pattern1x1* PatternControl::getOnOff1x1(int *d){
+  setOnOff1x1(d);
+  return onOff1x1;
+}
+void PatternControl::setOnOff2x4(int *d){
+  onOff2x4=new pattern2x4("OnOff");
+  bool tmpB=true;
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    bool b[2][4];
+    for(int w=0;w<2;w++){
+      for(int l=0;l<4;l++){
+        b[w][l]=tmpB;
+      }
+    }
+    onOff2x4->setPulse(d, b, &i);
+    tmpB=!tmpB;
+  }
+}
+pattern2x4* PatternControl::getOnOff2x4(int *d){
+  setOnOff2x4(d);
+  return onOff2x4;
+}
 void PatternControl::runPattern(motorArray1x1 *mA, pattern1x1 *pat){
+  motorControl->motorChangeVerbose=motorVerbose;
   verboseControl->verboseMsg("Running pattern "+pat->name+" on motor array "+mA->name);
   for(int i=0;i<MAX_PATTERN_LENGTH;i++){
     if(pat->PulseState(&i)==true){
+      verboseControl->debugMsg("Set motor "+String(mA->motorID)+" to "+String(pat->getPulse(&i)->state)+" for "+String(pat->getPulse(&i)->duration));
       motorControl->setMotorState(mA->motorID, pat->getPulse(&i)->state);
+      //verboseControl->debugMsg("Millis: "+String(millis()));
+      delay(pat->getPulse(&i)->duration);
+      //verboseControl->debugMsg("Millis: "+String(millis()));
     }
   }
+  motorControl->motorChangeVerbose=true;
 }
 void PatternControl::runPattern(motorArray2x4 *mA, pattern2x4 *pat){
+  motorControl->motorChangeVerbose=motorVerbose;
   verboseControl->verboseMsg("Running pattern "+pat->name+" on motor array "+mA->name);
   for(int i=0;i<MAX_PATTERN_LENGTH;i++){
     if(pat->PulseState(&i)==true){
       for(int w=0;w<mA->width;w++){
         for(int l=0;l<mA->length;l++){
+            verboseControl->debugMsg("Set motor "+String(mA->motorIDs[w][l])+" to "+String(pat->getPulse(&i)->state)+" for "+String(pat->getPulse(&i)->duration));
             motorControl->setMotorState(mA->motorIDs[w][l], pat->getPulse(&i)->States[w][l]);
         }
       }
+      delay(pat->getPulse(&i)->duration);
     }
   }
+  motorControl->motorChangeVerbose=true;
 }
 void PatternControl::setMotorArrayPins(char c, int ids[2][4], String s){
   switch(c){
@@ -186,19 +235,19 @@ void PatternControl::setMotorArrayPins(char c, int ids[2][4], String s){
 void PatternControl::setMotorArrayPins(String s, int p){
   gloveMotor=new motorArray1x1(s, p);
 }
-void PatternControl::onOff(int n){
-  onOff(defaultDuration,n);
+void PatternControl::runOnOff(int n){
+  runOnOff(defaultDuration,n);
 }
-void PatternControl::onOff(int d, int n){
+void PatternControl::runOnOff(int d, int n){
   switch(n){
     case 0:
-      runPattern(gloveMotor, onOff1x1);
+      runPattern(gloveMotor, getOnOff1x1(&d));
       break;
     case 1:
-      runPattern(gloveMotor, onOff1x1);
+      runPattern(motorArrayA, getOnOff2x4(&d));
       break;
     case 2:
-      runPattern(gloveMotor, onOff1x1);
+      runPattern(motorArrayB, getOnOff2x4(&d));
       break;
     default:
       break;

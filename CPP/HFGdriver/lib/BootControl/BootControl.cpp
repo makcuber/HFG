@@ -22,6 +22,7 @@
  * UD: 2/15/11/2016
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -55,6 +56,7 @@ void BootControl::killReset(){
 }
 void BootControl::btBoot() {
   // Open serial communications:
+  commControl->btEnabled=true;
   Serial.begin(9600);
   Serial.println("Type AT commands!");
 

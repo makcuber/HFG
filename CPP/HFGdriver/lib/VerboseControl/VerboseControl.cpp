@@ -22,6 +22,7 @@
  * UD: 1/21/11/2016
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -130,6 +131,8 @@ void VerboseControl::showMenu(int m) {
       verboseMsg("5 = Clear");
       verboseMsg("6 = Reset System (int delay)");
       verboseMsg("7 = Toggle all motors");
+      verboseMsg("8 = Run OnOff Pattern on GloveMotor (int duration)");
+      verboseMsg("9 = Run OnOff Pattern on MotorArrayA (int duration)");
       break;
     default:
       break;
