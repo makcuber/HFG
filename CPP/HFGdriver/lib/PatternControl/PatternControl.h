@@ -15,6 +15,7 @@
  * UD: 1/14/11/2016
  * UD: 5/25/11/2016
  * UD: 1/28/11/2016
+ * UP: 2/29/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -30,20 +31,21 @@
 
 #define MAX_PATTERN_LENGTH 4
 
-struct motorArray1x1{
-  String name;
-  int motorID;
+class motorArray1x1{
+  public:
+    String name;
+    int motorID;
 
-  motorArray1x1(String *s, int *n);
+    motorArray1x1(String s, int n);
 };
-struct motorArray2x4{
-  String name;
-  const static int width=2;
-  const static int length=4;
-  int xIDs[width];
-  int yIDs[length];;
+class motorArray2x4{
+  public:
+    String name;
+    const static int width=2;
+    const static int length=4;
+    int motorIDs[width][length];
 
-  motorArray2x4(String *s, int *x[2], int *y[4]);
+    motorArray2x4(String s, int ids[width][length]);
 };
 
 struct pulse1x1{
@@ -55,17 +57,16 @@ struct pulse1x1{
 struct pulse2x4{
   int duration;
   bool state;
-  bool xStates[2];
-  bool yStates[4];
+  bool States[2][4];
 
-  pulse2x4(int *d, bool *x[2], bool *y[4]);
+  pulse2x4(int *d, bool b[2][4]);
 };
 
 class pattern1x1{
   public:
     String name;
 
-    pattern1x1(String *s);
+    pattern1x1(String s);
     void setPulse(int *duration, bool *state, int *n);
     pulse1x1 *getPulse(int *n);
     int PulseCount();
@@ -80,8 +81,8 @@ class pattern2x4{
   public:
     String name;
 
-    pattern2x4(String *s);
-    void setPulse(int *duration, bool *x[2], bool *y[4], int *n);
+    pattern2x4(String s);
+    void setPulse(int *duration, bool b[2][4], int *n);
     pulse2x4 *getPulse(int *n);
     int PulseCount();
     bool PulseState(int *n);
@@ -99,15 +100,23 @@ class PatternControl {
     MotorControl *motorControl;
 
     //constants - declare values that will remain constant throughout the program here
-
+    const static int defaultGlovePin=DEFAULT_MOTOR_START_PIN+8*2;
     //values - place class variables here
+    int defaultDuration;
 
     //Functions
-    PatternControl(VerboseControl *vc, MotorControl *mc);
-
+    PatternControl(VerboseControl *vc, MotorControl *mc, int *d);
+    void setMotorArrayPins(char c, int ids[2][4], String s);
+    void setMotorArrayPins(String s, int p);
     void runPattern(motorArray1x1 *mA, pattern1x1 *pat);
     void runPattern(motorArray2x4 *mA, pattern2x4 *pat);
+    void onOff(int *d, int *n);
   private:
-
+    motorArray1x1 *gloveMotor;
+    motorArray2x4 *motorArrayA,*motorArrayB;
+    pattern1x1 *onOff1x1;
+    pattern2x4 *onOff2x4;
+    pattern2x4 *sweepUp, *sweepDown, *sweepLeft, *sweepRight;
+    pattern2x4 *alternateRow, *alternateCol;
 };
 #endif
