@@ -1,0 +1,1 @@
+"C:\Users\MakCuber\Documents\GitHub\HFG\apps\arduinoopcserver_1_9\ArduinoOPCServer.exe" /unregserver
