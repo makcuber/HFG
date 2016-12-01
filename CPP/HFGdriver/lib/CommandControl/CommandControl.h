@@ -24,6 +24,7 @@
  * UP: 3/23/11/2016
  * UD: 5/25/11/2016
  * UD: 2/29/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -40,7 +41,6 @@
 #include <BootControl.h>
 #include <PatternControl.h>
 #include <String.h>
-//#include <opcControl.h>
 
 #define MAX_CMDS 8
 #define MAX_PARAMETERS 3
@@ -83,7 +83,7 @@ class CommandControl {
     String parameters[MAX_PARAMETERS];
 
     int commMode[MAX_COMMS];
-    
+
     char seperator[MAX_COMMS];
     char delimiter[MAX_COMMS];
     bool opcEnabled;
@@ -101,6 +101,8 @@ class CommandControl {
     void usbcmd(String cmdS, String valS);
   private:
     cmdGroup *motorCMDS;
+    cmdGroup *patternCMDS;
+    void patternCmds();
     cmdGroup *verboseCMDS;
     cmdGroup *commCMDS;
     cmdGroup *bootCMDS;

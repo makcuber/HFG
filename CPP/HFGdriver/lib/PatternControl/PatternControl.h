@@ -17,6 +17,7 @@
  * UD: 1/28/11/2016
  * UP: 2/29/11/2016
  * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -118,8 +119,12 @@ class PatternControl {
     void setMotorArrayPins(String s, int p);
     void runPattern(motorArray1x1 *mA, pattern1x1 *pat);
     void runPattern(motorArray2x4 *mA, pattern2x4 *pat);
+    void runOnOff(int d[MAX_PATTERN_LENGTH], int n);
     void runOnOff(int d, int n);
     void runOnOff(int n);
+    void runYYZ(int b, int m, int n);
+    void runYYZ(int b, int n);
+    void runYYZ(int n);
   private:
     motorArray1x1 *gloveMotor;
     motorArray2x4 *motorArrayA,*motorArrayB;
@@ -130,7 +135,9 @@ class PatternControl {
 
     void setOnOff1x1(int *d);
     pattern1x1* getOnOff1x1(int *d);
-    void setOnOff2x4(int *d);
-    pattern2x4* getOnOff2x4(int *d);
+    void setOnOff2x4(int d);
+    void setOnOff2x4(int d[MAX_PATTERN_LENGTH]);
+    pattern2x4* getOnOff2x4(int d);
+    pattern2x4* getOnOff2x4(int d[MAX_PATTERN_LENGTH]);
 };
 #endif

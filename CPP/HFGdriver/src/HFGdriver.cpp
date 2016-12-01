@@ -27,6 +27,7 @@
  * UP: 3/23/11/2016
  * UP: 2/29/11/2016
  * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -70,7 +71,40 @@ void secret(){
 }
 
 //OPC Functions
+bool YYZA(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool tmpB = false;
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    tmpB=value;
+    if(tmpB){
+      patternControl.runYYZ(1);
+    }
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
 
+  } else {
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    return tmpB;
+  }
+}
+bool YYZB(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool tmpB = false;
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    tmpB=value;
+    if(tmpB){
+      patternControl.runYYZ(2);
+    }
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+
+  } else {
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    return tmpB;
+  }
+}
 bool OnOffA(const char *itemID, const opcOperation opcOP, const bool value){
   static bool tmpB = false;
   /*
@@ -161,6 +195,8 @@ void setup() {
       OPCSerial.setup();
       OPCSerial.addItem("OnOffA", opc_readwrite, opc_bool, OnOffA);
       OPCSerial.addItem("OnOffB", opc_readwrite, opc_bool, OnOffB);
+      OPCSerial.addItem("YYZA", opc_readwrite, opc_bool, YYZA);
+      OPCSerial.addItem("YYZB", opc_readwrite, opc_bool, YYZB);
       OPCSerial.addItem("OnOffGlove", opc_readwrite, opc_bool, OnOffGlove);
       OPCSerial.addItem("LED", opc_readwrite, opc_bool, led);
       break;

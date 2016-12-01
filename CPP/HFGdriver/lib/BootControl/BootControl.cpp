@@ -23,6 +23,7 @@
  * UP: 2/22/11/2016
  * UP: 3/23/11/2016
  * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -71,6 +72,8 @@ void BootControl::boot() {
   commControl->setAllCommBaud(9600);
   commControl->connectComm(0);
   commControl->connectComm(1);
+
+  commControl->OPC_CHANNEL=2;
 
   //set comm port states
   if(commControl->OPC_CHANNEL==0){

@@ -1,3 +1,27 @@
+/*
+ * Credit Format
+ * ---------------
+ * Dev: Your Name Here
+ * DC: Date file was originally create on (only if you are the first contributor)
+ * UP: Date that you made changes to the file
+ *
+ * Note - Date format = day of the week/day of the month/month/year
+ * Ex: Wednesday, July, 1st, 2014 => 3/01/07/2014
+ * ---------------
+ * Dev: Jonathan Brunath
+ * DC: 2/01/11/2016
+ * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
+ * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
+ * ---------------
+ * Dev: Add your name here
+ * UP: Date you made changes
+ * ---------------
+*/
+
 #ifndef OPC_H
 #define OPC_H
 
@@ -9,20 +33,20 @@
 #define SERIALCOMMAND_MAXCOMMANDLENGTH 64
 #define SERIALCOMMAND_BUFFER 128
 
-typedef enum opctypes{
+enum opctypes{
   opc_bool,
   opc_byte,
   opc_int,
   opc_float
 };
 
-typedef enum opcAccessRights{
+enum opcAccessRights{
   opc_read,
   opc_write,
   opc_readwrite
 };
 
-typedef enum opcOperation{
+enum opcOperation{
   opc_opread,
   opc_opwrite,
 };

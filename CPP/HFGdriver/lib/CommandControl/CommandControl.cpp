@@ -26,6 +26,7 @@
  * UD: 5/25/11/2016
  * UD: 2/29/11/2016
  * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -167,6 +168,35 @@ void CommandControl::cmdSort(int mode, String cmdS, String valS) {
       break;
   }
 }
+void CommandControl::patternCmds() {
+  int cmd=0;
+  switch (cmd) {
+    case 0:
+
+    case 1:
+
+    case 2:
+
+    case 3:
+
+    case 4:
+
+    case 5:
+
+    case 6:
+
+    case 7:
+
+    case 8:
+
+    case 9:
+      break;
+    default:
+      //WARNING: code placed here will run on every cycle that you dont send a command
+      break;
+  }
+}
+
 void CommandControl::btComm() {
   //String cmdS,valS;
   while (commControl->getCommStatus(bluetoothChannel)) {

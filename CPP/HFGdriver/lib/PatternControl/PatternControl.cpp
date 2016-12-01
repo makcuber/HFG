@@ -17,6 +17,7 @@
  * UD: 1/28/11/2016
  * UP: 2/29/11/2016
  * UP: 3/30/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -172,7 +173,7 @@ pattern1x1* PatternControl::getOnOff1x1(int *d){
   setOnOff1x1(d);
   return onOff1x1;
 }
-void PatternControl::setOnOff2x4(int *d){
+void PatternControl::setOnOff2x4(int d){
   onOff2x4=new pattern2x4("OnOff");
   bool tmpB=true;
   for(int i=0;i<MAX_PATTERN_LENGTH;i++){
@@ -182,12 +183,30 @@ void PatternControl::setOnOff2x4(int *d){
         b[w][l]=tmpB;
       }
     }
-    onOff2x4->setPulse(d, b, &i);
+    onOff2x4->setPulse(&d, b, &i);
     tmpB=!tmpB;
   }
 }
-pattern2x4* PatternControl::getOnOff2x4(int *d){
-  setOnOff2x4(d);
+void PatternControl::setOnOff2x4(int d[MAX_PATTERN_LENGTH]){
+  onOff2x4=new pattern2x4("OnOff");
+  bool tmpB=true;
+  for(int i=0;i<MAX_PATTERN_LENGTH;i++){
+    bool b[2][4];
+    for(int w=0;w<2;w++){
+      for(int l=0;l<4;l++){
+        b[w][l]=tmpB;
+      }
+    }
+    onOff2x4->setPulse(&d[i], b, &i);
+    tmpB=!tmpB;
+  }
+}
+pattern2x4* PatternControl::getOnOff2x4(int duration){
+  setOnOff2x4(duration);
+  return onOff2x4;
+}
+pattern2x4* PatternControl::getOnOff2x4(int durations[MAX_PATTERN_LENGTH]){
+  setOnOff2x4(durations);
   return onOff2x4;
 }
 void PatternControl::runPattern(motorArray1x1 *mA, pattern1x1 *pat){
@@ -248,6 +267,43 @@ void PatternControl::runOnOff(int d, int n){
       break;
     case 2:
       runPattern(motorArrayB, getOnOff2x4(&d));
+      break;
+    default:
+      break;
+  }
+}
+void PatternControl::runOnOff(int d[MAX_PATTERN_LENGTH], int n){
+  switch(n){
+    case 0:
+      runPattern(gloveMotor, getOnOff1x1(d));
+      break;
+    case 1:
+      runPattern(motorArrayA, getOnOff2x4(d));
+      break;
+    case 2:
+      runPattern(motorArrayB, getOnOff2x4(d));
+      break;
+    default:
+      break;
+  }
+}
+void PatternControl::runYYZ(int n){
+  runYYZ(defaultDuration, 2, n);
+}
+void PatternControl::runYYZ(int b, int n){
+  runYYZ(b, 2, n);
+}
+void PatternControl::runYYZ(int b, int m, int n){
+  int d[]={b*m,b,b*m,b*m,b*m,b,b*m,b*m,b*m,b*m,b,b};
+  switch(n){
+    case 0:
+      //runPattern(gloveMotor, getOnOff1x1(d));
+      break;
+    case 1:
+      runPattern(motorArrayA, getOnOff2x4(d));
+      break;
+    case 2:
+      runPattern(motorArrayB, getOnOff2x4(d));
       break;
     default:
       break;

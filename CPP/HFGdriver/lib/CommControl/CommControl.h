@@ -19,6 +19,7 @@
  * UD: 6/12/11/2016
  * UD: 3/16/11/2016
  * UD: 5/25/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -44,7 +45,7 @@ enum channelType{
 class CommControl{
   public:
     //Inherited objects
-    const static int OPC_CHANNEL = 1;
+    int OPC_CHANNEL;
 
     //Serial variables
     int commBaud[MAX_COMMS];

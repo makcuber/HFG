@@ -18,6 +18,7 @@
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
  * UD: 5/25/11/2016
+ * UD: 4/1/12/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -34,6 +35,7 @@ CommControl::CommControl(){
     baudRates[i]=tmp[i];
   }
   btEnabled = true;
+  OPC_CHANNEL=1;
 }
 
 void CommControl::reconnectComm(int comm) {
