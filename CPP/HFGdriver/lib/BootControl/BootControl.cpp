@@ -73,26 +73,28 @@ void BootControl::boot() {
   commControl->connectComm(1);
 
   //set comm port states
-  if(OPC_CHANNEL!=0){
-    verboseControl->setVerboseLevel(3, 0);
-  }else{
+  if(commControl->OPC_CHANNEL==0){
     verboseControl->setVerboseLevel(0, 0);
-  }
-  if(OPC_CHANNEL!=1){
-    verboseControl->setVerboseLevel(3, 1);
   }else{
+    verboseControl->setVerboseLevel(3, 0);
+    commControl->commCmd[0]=true;
+  }
+  if(commControl->OPC_CHANNEL==1){
     verboseControl->setVerboseLevel(0, 1);
+  }else{
+    verboseControl->setVerboseLevel(3, 1);
+    commControl->commCmd[1]=true;
   }
 
-  verboseControl->verboseMsg("---------------------------------");
+  verboseControl->verboseMsg("---------------------------------------------------------");
   verboseControl->verboseMsg("Serial Communications Established");
-  verboseControl->verboseMsg("---------------------------------");
-  verboseControl->verboseMsg("CommPort\t|Status\t|Verbose");
-  verboseControl->verboseMsg("---------------------------------");
+  verboseControl->verboseMsg("---------------------------------------------------------");
+  verboseControl->verboseMsg("CommPort\t|Verbose\t|Debug\t|Access");
+  verboseControl->verboseMsg("---------------------------------------------------------");
   for (int i = 0; i < MAX_COMMS; i++) {
-    verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(commControl->getCommStatus(i)) + "\t|" + String(verboseControl->verboseEnabled[i]));
+    verboseControl->verboseMsg("Comm#" + String(i) + "\t\t|" + String(verboseControl->verboseEnabled[i]) + "\t\t|" + String(verboseControl->debugEnabled[i])+"\t|"+String(commControl->commCmd[i]));
   }
-  verboseControl->verboseMsg("-----------------------------------");
+  verboseControl->verboseMsg("---------------------------------------------------------");
   killReset();
   verboseControl->verboseMsg("Kill reset signal");
   verboseControl->verboseMsg("---------------------------------");

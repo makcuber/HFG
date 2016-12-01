@@ -83,7 +83,7 @@ class CommandControl {
     String parameters[MAX_PARAMETERS];
 
     int commMode[MAX_COMMS];
-    bool commCmd[MAX_COMMS];
+    
     char seperator[MAX_COMMS];
     char delimiter[MAX_COMMS];
     bool opcEnabled;

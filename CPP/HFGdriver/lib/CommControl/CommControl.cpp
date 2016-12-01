@@ -158,7 +158,7 @@ int CommControl::SerialReadB(int comm) {
     default:
       break;
   }
-  return -1;
+  return 0;
 }
 void CommControl::SerialWriteB(int comm, int msg) {
   if (msg != 0) {

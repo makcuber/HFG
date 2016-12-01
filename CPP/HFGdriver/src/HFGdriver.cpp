@@ -53,7 +53,7 @@ CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl, &resetPin);
-OPCSerial OPCSerial(&verboseControl,&commControl,0);
+OPCSerial OPCSerial;
 PatternControl patternControl(&verboseControl,&motorControl,250);
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl,&patternControl);
 
@@ -84,10 +84,65 @@ bool OnOffA(const char *itemID, const opcOperation opcOP, const bool value){
     verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
 
   } else {
-    tmpB=false;
     verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    return tmpB;
   }
-  return tmpB;
+}
+bool OnOffB(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool tmpB = false;
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    tmpB=value;
+    if(tmpB){
+      patternControl.runOnOff(2);
+    }
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+
+  } else {
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    return tmpB;
+  }
+}
+bool OnOffGlove(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool tmpB = false;
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    tmpB=value;
+    if(tmpB){
+      patternControl.runOnOff(0);
+    }
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+
+  } else {
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+    return tmpB;
+  }
+}
+bool led(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool ledValue = false;
+
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    ledValue = value;
+
+    if (ledValue)
+      digitalWrite(13, HIGH);
+    else
+      digitalWrite(13, LOW);
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+  }
+  else
+    /*
+     * read the led status
+     */
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+ledValue);
+    return ledValue;
 }
 
 //BOOTUP
@@ -103,11 +158,11 @@ void setup() {
       break;
     default:
       bootControl.boot();
-      //opcControl.enabled=true;
-      //opcControl.setup();
-      commandControl.opcChannel=OPC_CHANNEL;
       OPCSerial.setup();
       OPCSerial.addItem("OnOffA", opc_readwrite, opc_bool, OnOffA);
+      OPCSerial.addItem("OnOffB", opc_readwrite, opc_bool, OnOffB);
+      OPCSerial.addItem("OnOffGlove", opc_readwrite, opc_bool, OnOffGlove);
+      OPCSerial.addItem("LED", opc_readwrite, opc_bool, led);
       break;
   }
 }
@@ -150,25 +205,24 @@ void loop() {
       break;
     default:
       //USB Communication
-      if(verboseControl.verboseLevel[0]>1){
+      if(commControl.commCmd[0]){
         commandControl.usbComm();
       }
-      if(verboseControl.verboseLevel[1]>1){
+      if(commControl.commCmd[1]){
         commandControl.btComm();
       }
 
-      //Bluetooth Communication
-      //commandControl.btComm();
-      //push Bluetooth communications to USB communications
-
-      if (commControl.btEnabled) {
-        //comm2Comm(1, 0, 's');
-        bluetoothRead();
-      }
-
       //OPC
-      OPCSerial.processOPCCommands();
-
+      if(commControl.OPC_CHANNEL==0){
+        OPCSerial.processOPCCommands();
+      }else{
+        OPCSerial.processOPCCommandsBT();
+      }
+      /*
+      while(commControl.getCommStatus(1)){
+        verboseControl.verboseMsg(String(Serial1.read()));
+      }
+      */
       break;
   }
 }

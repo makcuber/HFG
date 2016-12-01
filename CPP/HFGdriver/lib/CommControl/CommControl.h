@@ -33,7 +33,6 @@
 #define MAX_COMMS 4
 #define MAX_BAUD 6
 #define SERIAL_BUFFER 128
-#define OPC_CHANNEL 0
 
 enum channelType{
   usbChannel,
@@ -45,10 +44,12 @@ enum channelType{
 class CommControl{
   public:
     //Inherited objects
+    const static int OPC_CHANNEL = 1;
 
     //Serial variables
     int commBaud[MAX_COMMS];
     int baudRates[MAX_BAUD];
+    bool commCmd[MAX_COMMS];
     bool btEnabled;
 
     //values - place class variables here

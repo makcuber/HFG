@@ -1,3 +1,27 @@
+/*
+ * Credit Format
+ * ---------------
+ * Dev: Your Name Here
+ * DC: Date file was originally create on (only if you are the first contributor)
+ * UP: Date that you made changes to the file
+ *
+ * Note - Date format = day of the week/day of the month/month/year
+ * Ex: Wednesday, July, 1st, 2014 => 3/01/07/2014
+ * ---------------
+ * Dev: Jonathan Brunath
+ * DC: 2/01/11/2016
+ * UD: 3/02/11/2016
+ * UD: 4/03/11/2016
+ * UD: 7/13/11/2016
+ * UD: 1/14/11/2016
+ * UD: 2/15/11/2016
+ * UP: 3/30/11/2016
+ * ---------------
+ * Dev: Add your name here
+ * UP: Date you made changes
+ * ---------------
+*/
+
 #include <OPC.h>
 #include <Arduino.h>
 #include <HardwareSerial.h>
@@ -5,29 +29,31 @@
 
 /************************************* OPC */
 
-OPC::OPC() : OPCItemList(NULL) ,  OPCItemsCount(0) {}
+OPC::OPC(VerboseControl *vc) : OPCItemList(NULL) ,  OPCItemsCount(0)  {
+  verboseControl=vc;
+}
 
 void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
 void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (*function)(const char *itemID, const opcOperation opcOP, const byte value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (*function)(const char *itemID, const opcOperation opcOP, const int value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (*function)(const char *itemID, const opcOperation opcOP, const int value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float  (*function)(const char *itemID, const opcOperation opcOP, const float value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (*function)(const char *itemID, const opcOperation opcOP, const float value))
 {
-  internaladdItem(itemID, opcAccessRight, opctype, int(function));
+  internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int callback_function)
+void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int callback_function)
 {
   OPCItemList = (OPCItemType *) realloc(OPCItemList, (OPCItemsCount + 1) * sizeof(OPCItemType));
   if (OPCItemList != NULL) {
@@ -40,7 +66,7 @@ void OPC::internaladdItem(const char *itemID, opcAccessRights opcAccessRight, op
     OPCItemList[OPCItemsCount].ptr_callback = callback_function;
     OPCItemsCount++;
   } else {
-     Serial.println(F("Not enough memory"));
+     verboseControl->verboseMsg("Not enough memory");
   }
 
 }
@@ -51,127 +77,29 @@ void OPCSerial::setup() {}
 
 void OPCSerial::sendOPCItemsMap()
 {
-  Serial.print(F("<0"));
+  String str;
+  str+=String("<0");
 
   for(int k=0;k<OPCItemsCount;k++) {
-    Serial.print(F(","));
-    Serial.print(OPCItemList[k].itemID);
-    Serial.print(F(","));
-    Serial.print(int(OPCItemList[k].opcAccessRight));
-    Serial.print(F(","));
-    Serial.print(int(OPCItemList[k].itemType));
+    str+=String(",");
+    str+=String(OPCItemList[k].itemID);
+    str+=String(",");
+    str+=String(int(OPCItemList[k].opcAccessRight));
+    str+=String(",");
+    str+=String(int(OPCItemList[k].itemType));
   }
 
-  Serial.println(F(">"));
-}
-void OPCSerial::sendOPCItemsMapBT()
-{
-  Serial1.print(F("<0"));
-
-  for(int k=0;k<OPCItemsCount;k++) {
-    Serial1.print(F(","));
-    Serial1.print(OPCItemList[k].itemID);
-    Serial1.print(F(","));
-    Serial1.print(int(OPCItemList[k].opcAccessRight));
-    Serial1.print(F(","));
-    Serial1.print(int(OPCItemList[k].itemType));
-  }
-
-  Serial1.println(F(">"));
+  str+=String(">");
+  verboseControl->debugMsg("OPCItems Map: "+str);
+  commControl->SerialWriteS(commID,str);
 }
 
-OPCSerial::OPCSerial()  {
+OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int ID) : OPC(vc)  {
   buffer[0] = '\0';
+  commControl=cc;
+  commID=ID;
 }
 
-void OPCSerial::processOPCCommandsBT() {
-  bool matched = false;
-  char *p,*j;
-
-  bool (*bool_callback)(const char *itemID, const opcOperation opcOP, const bool value);
-  byte (*byte_callback)(const char *itemID, const opcOperation opcOP, const byte value);
-  int (*int_callback)(const char *itemID, const opcOperation opcOP, const int value);
-  float (*float_callback)(const char *itemID, const opcOperation opcOP, const float value);
-
-  while (Serial1.available()) {
-    char inChar = Serial1.read();
-    if (inChar == '\r') {
-      if (buffer[0] == '\0')
-        sendOPCItemsMapBT();
-      else {
-        // Lets search for read
-        for (int i = 0; i < OPCItemsCount; i++) {
-         if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
-
-          // Execute the stored handler function for the command
-          switch (OPCItemList[i].itemType) {
-            case opc_bool :
-                      bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      Serial1.println(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
-                      break;
-            case opc_byte :
-                      byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
-                      Serial1.println(byte_callback(OPCItemList[i].itemID,opc_opread,NULL));
-                      break;
-            case opc_int :
-                      int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
-                      Serial1.println(int_callback(OPCItemList[i].itemID,opc_opread,NULL));
-                      break;
-            case opc_float :
-                      float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
-                      Serial1.println(float_callback(OPCItemList[i].itemID,opc_opread,NULL));
-                      break;
-          }
-
-          matched = true;
-          break;
-          } /* endif */
-        } /* endfor */
-
-        if (!matched) {
-          // Lets search for write
-          p = strtok_r(buffer,"=",&j);
-          for (int i = 0; i < OPCItemsCount; i++) {
-            if (!strncmp(p, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
-
-              // Call the stored handler function for the command
-              switch (OPCItemList[i].itemType) {
-              case opc_bool :
-                      bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      bool_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_byte :
-                      byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
-                      byte_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_int :
-                      int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
-                      int_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_float :
-                      float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float))(OPCItemList[i].ptr_callback);
-                      float_callback(OPCItemList[i].itemID,opc_opwrite,atof(j));
-                      break;
-              }
-
-              break;
-            } /* endif */
-          } /* endfor */
-        }
-      }
-
-      buffer[0] = '\0';
-      bufPos = 0;
-    }
-    else {
-      if (bufPos < SERIALCOMMAND_BUFFER) {
-        buffer[bufPos++] = inChar;
-        buffer[bufPos] = '\0';
-      }
-    }
-    Serial.println("\""+String(buffer)+"\"");
-  }
-}
 void OPCSerial::processOPCCommands() {
   bool matched = false;
   char *p,*j;
@@ -181,33 +109,59 @@ void OPCSerial::processOPCCommands() {
   int (*int_callback)(const char *itemID, const opcOperation opcOP, const int value);
   float (*float_callback)(const char *itemID, const opcOperation opcOP, const float value);
 
-  while (Serial.available()>0) {
-    char inChar = Serial.read();
+  while (commControl->getCommStatus(commID)) {
+    char inChar = commControl->SerialReadB(commID);
+
+    verboseControl->debugMsg("1 OPC inChar: "+String(inChar));
+
     if (inChar == '\r') {
+      verboseControl->debugMsg("2 OPC Buffer: "+String(buffer));
       if (buffer[0] == '\0')
         sendOPCItemsMap();
       else {
         // Lets search for read
-        for (int i = 0; i < OPCItemsCount; i++) {
-         if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
+        verboseControl->debugMsg("3 OPC Buffer Old: "+String(buffer));
 
+        //Shift buffer back 1 position to overwrite a random '\r' that appears
+        /*
+        char c[SERIALCOMMAND_BUFFER+1];
+        for(int i=1;i<SERIALCOMMAND_BUFFER+1;i++){
+          c[i-1]=buffer[i];
+        }
+        strcpy(buffer, c);
+        //delete[] c;
+        */
+        
+        verboseControl->debugMsg("4 OPC Buffer New: "+String(buffer));
+        for (int i = 0; i < OPCItemsCount; i++) {
+          //verboseControl->debugMsg("OPC Read Item Tested: "+String(OPCItemList[i].itemID));
+
+         if (!strncmp(buffer, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
+          verboseControl->debugMsg("5 OPC Item ID: "+String(OPCItemList[i].itemID));
+          verboseControl->debugMsg("6 OPC Item Type: "+String(OPCItemList[i].itemType));
           // Execute the stored handler function for the command
           switch (OPCItemList[i].itemType) {
             case opc_bool :
+
                       bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
+                      verboseControl->debugMsg("7 OPC bool");
                       Serial.println(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
+
                       break;
             case opc_byte :
                       byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
                       Serial.println(byte_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg("7 OPC byte");
                       break;
             case opc_int :
                       int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
                       Serial.println(int_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg("7 OPC int");
                       break;
             case opc_float :
                       float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
                       Serial.println(float_callback(OPCItemList[i].itemID,opc_opread,NULL));
+                      verboseControl->debugMsg("7 OPC float");
                       break;
           }
 
@@ -218,28 +172,35 @@ void OPCSerial::processOPCCommands() {
 
         if (!matched) {
           // Lets search for write
+          verboseControl->debugMsg("7 OPC Buffer: "+String(buffer));
           p = strtok_r(buffer,"=",&j);
+          verboseControl->debugMsg("8 OPC Write CMD: "+String(p));
           for (int i = 0; i < OPCItemsCount; i++) {
+            //verboseControl->debugMsg("OPC Write Item Tested: "+String(OPCItemList[i].itemID));
             if (!strncmp(p, OPCItemList[i].itemID, SERIALCOMMAND_MAXCOMMANDLENGTH)) {
-
+              verboseControl->debugMsg("9 OPC Item: "+String(OPCItemList[i].itemID));
               // Call the stored handler function for the command
               switch (OPCItemList[i].itemType) {
-              case opc_bool :
-                      bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
-                      bool_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_byte :
-                      byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
-                      byte_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_int :
-                      int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
-                      int_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
-                      break;
-              case opc_float :
-                      float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float))(OPCItemList[i].ptr_callback);
-                      float_callback(OPCItemList[i].itemID,opc_opwrite,atof(j));
-                      break;
+                case opc_bool :
+                        bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
+                        verboseControl->debugMsg("10 OPC Write Value: "+String(atoi(j)));
+                        bool_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
+                        break;
+                case opc_byte :
+                        byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
+                        verboseControl->debugMsg("11 OPC Write Value: "+String(atoi(j)));
+                        byte_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
+                        break;
+                case opc_int :
+                        int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
+                        verboseControl->debugMsg("12 OPC Write Value: "+String(atoi(j)));
+                        int_callback(OPCItemList[i].itemID,opc_opwrite,atoi(j));
+                        break;
+                case opc_float :
+                        float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float))(OPCItemList[i].ptr_callback);
+                        verboseControl->debugMsg("13 OPC Write Value: "+String(atof(j)));
+                        float_callback(OPCItemList[i].itemID,opc_opwrite,atof(j));
+                        break;
               }
 
               break;
@@ -255,15 +216,16 @@ void OPCSerial::processOPCCommands() {
       if (bufPos < SERIALCOMMAND_BUFFER) {
         buffer[bufPos++] = inChar;
         buffer[bufPos] = '\0';
+        verboseControl->debugMsg("14 OPC Buffer: "+String(buffer));
+        verboseControl->debugMsg("15 OPC Buffer Position: "+String(bufPos));
       }
     }
-    Serial1.println("\""+String(buffer)+"\"");
   }
 }
 
 /************************************* OPCEthernet */
 
-OPCEthernet::OPCEthernet() {}
+OPCEthernet::OPCEthernet(VerboseControl *vc) : OPC(vc) {}
 
 void OPCEthernet::after_setup(uint8_t listen_port)
 {

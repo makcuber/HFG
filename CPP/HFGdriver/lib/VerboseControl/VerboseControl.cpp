@@ -122,8 +122,9 @@ void VerboseControl::showMenu(int m) {
   switch (m) {
     case 0:
       verboseMsg("------------------");
-      verboseMsg("Help");
+      verboseMsg("Menu");
       verboseMsg("------------------");
+      verboseMsg("0 = Show menu");
       verboseMsg("1 = Stop All Motors");
       verboseMsg("2 = Toggle Motor State (int motorId)");
       verboseMsg("3 = Toggle OPC channel verbose");
@@ -133,6 +134,7 @@ void VerboseControl::showMenu(int m) {
       verboseMsg("7 = Toggle all motors");
       verboseMsg("8 = Run OnOff Pattern on GloveMotor (int duration)");
       verboseMsg("9 = Run OnOff Pattern on MotorArrayA (int duration)");
+      verboseMsg("10 = Run OnOff Pattern on MotorArrayB (int duration)");
       break;
     default:
       break;

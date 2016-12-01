@@ -91,7 +91,7 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
   mode = 0;
 
   for(int i=0;i<MAX_COMMS;i++){
-    commCmd[i]=false;
+    commControl->commCmd[i]=false;
     commMode[i]=0;
   }
 
@@ -101,7 +101,7 @@ CommandControl::CommandControl(CommControl *cc, VerboseControl *vc, MotorControl
 }
 void CommandControl::processCMDs(){
   for(int i=0;i<MAX_COMMS;i++){
-    if(commCmd[i]){
+    if(commControl->commCmd[i]){
       readComm(&i);
     }
   }
@@ -252,6 +252,14 @@ void CommandControl::usbcmd(String cmdS, String valS) {
         patternControl->runOnOff(val,1);
       }else{
         patternControl->runOnOff(1);
+      }
+      break;
+    case 10:
+      verboseControl->verboseMsg("USB cmd#10");
+      if(val>0){
+        patternControl->runOnOff(val,2);
+      }else{
+        patternControl->runOnOff(2);
       }
       break;
     default:
