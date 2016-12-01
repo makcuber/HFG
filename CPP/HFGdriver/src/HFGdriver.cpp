@@ -39,14 +39,13 @@
 #include <CommControl.h>
 #include <VerboseControl.h>
 #include <CommandControl.h>
-#include <opcControl.h>
+#include <OPC.h>
 #include <PatternControl.h>
 
 //constants - declare values that will remain constant throughout the program here
 
 //values - place global variables here
 char runMode = 'n';
-int opcChannel=2;
 int resetPin=2;
 
 //Define Control objects
@@ -54,8 +53,8 @@ CommControl commControl;
 VerboseControl verboseControl(&commControl);
 MotorControl motorControl(&verboseControl);
 BootControl bootControl(&commControl,&verboseControl,&motorControl, &resetPin);
-//opcControl opcControl(&verboseControl, &commControl, &motorControl, &opcChannel);
-PatternControl patternControl(&verboseControl,&motorControl,500);
+OPCSerial OPCSerial(&verboseControl,&commControl,0);
+PatternControl patternControl(&verboseControl,&motorControl,250);
 CommandControl commandControl(&commControl,&verboseControl,&motorControl,&bootControl,&patternControl);
 
 //function declarations
@@ -68,6 +67,27 @@ void bluetoothWrite(String msg);
 //Eastereggs
 void secret(){
   //hide something fun here :)
+}
+
+//OPC Functions
+
+bool OnOffA(const char *itemID, const opcOperation opcOP, const bool value){
+  static bool tmpB = false;
+  /*
+   * if operation is a write command from OPC Client
+   */
+  if (opcOP == opc_opwrite) {
+    tmpB=value;
+    if(tmpB){
+      patternControl.runOnOff(1);
+    }
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" set to "+value);
+
+  } else {
+    tmpB=false;
+    verboseControl.debugMsg("OPC ItemID "+String(*itemID)+" = "+tmpB);
+  }
+  return tmpB;
 }
 
 //BOOTUP
@@ -85,7 +105,9 @@ void setup() {
       bootControl.boot();
       //opcControl.enabled=true;
       //opcControl.setup();
-      commandControl.opcChannel=&opcChannel;
+      commandControl.opcChannel=OPC_CHANNEL;
+      OPCSerial.setup();
+      OPCSerial.addItem("OnOffA", opc_readwrite, opc_bool, OnOffA);
       break;
   }
 }
@@ -145,7 +167,8 @@ void loop() {
       }
 
       //OPC
-      //opcControl.updateOPC();
+      OPCSerial.processOPCCommands();
+
       break;
   }
 }

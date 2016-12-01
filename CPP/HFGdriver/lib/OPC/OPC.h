@@ -14,6 +14,7 @@
  * UD: 4/03/11/2016
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -29,7 +30,6 @@
 #include <SPI.h>
 #include <VerboseControl.h>
 //#include <MotorControl.h>
-#include <opcCallback.h>
 
 #define SERIALCOMMAND_MAXCOMMANDLENGTH 64
 #define SERIALCOMMAND_BUFFER 128
@@ -45,6 +45,11 @@ enum opcAccessRights{
   opc_read,
   opc_write,
   opc_readwrite
+};
+
+enum opcOperation{
+  opc_opread,
+  opc_opwrite,
 };
 
 class OPC {
@@ -67,10 +72,10 @@ public:
 
   OPC(VerboseControl *vc);
 
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const byte value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const int value));
-  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const float value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (*function)(const char *itemID, const opcOperation opcOP, const bool value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (*function)(const char *itemID, const opcOperation opcOP, const byte value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, int (*function)(const char *itemID, const opcOperation opcOP, const int value));
+  void addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, float (*function)(const char *itemID, const opcOperation opcOP, const float value));
 };
 
 class OPCSerial : public OPC {
@@ -78,8 +83,8 @@ protected:
   void sendOPCItemsMap();
 public:
   CommControl *commControl;
-  int *commID;
-  OPCSerial(VerboseControl *vc, CommControl *cc, int *ID);
+  int commID;
+  OPCSerial(VerboseControl *vc, CommControl *cc, int ID);
   void setup();
   void processOPCCommands();
 };

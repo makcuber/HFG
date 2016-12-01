@@ -73,8 +73,16 @@ void BootControl::boot() {
   commControl->connectComm(1);
 
   //set comm port states
-  verboseControl->setVerboseLevel(3, 0);
-  verboseControl->setVerboseLevel(3, 1);
+  if(OPC_CHANNEL!=0){
+    verboseControl->setVerboseLevel(3, 0);
+  }else{
+    verboseControl->setVerboseLevel(0, 0);
+  }
+  if(OPC_CHANNEL!=1){
+    verboseControl->setVerboseLevel(3, 1);
+  }else{
+    verboseControl->setVerboseLevel(0, 1);
+  }
 
   verboseControl->verboseMsg("---------------------------------");
   verboseControl->verboseMsg("Serial Communications Established");

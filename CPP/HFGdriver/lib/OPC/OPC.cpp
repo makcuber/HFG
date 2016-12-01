@@ -15,6 +15,7 @@
  * UD: 7/13/11/2016
  * UD: 1/14/11/2016
  * UD: 2/15/11/2016
+ * UP: 3/30/11/2016
  * ---------------
  * Dev: Add your name here
  * UP: Date you made changes
@@ -32,22 +33,22 @@ OPC::OPC(VerboseControl *vc) : OPCItemList(NULL) ,  OPCItemsCount(0)  {
   verboseControl=vc;
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const bool value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, bool (*function)(const char *itemID, const opcOperation opcOP, const bool value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const byte value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype, byte (*function)(const char *itemID, const opcOperation opcOP, const byte value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const int value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  int (*function)(const char *itemID, const opcOperation opcOP, const int value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
 
-void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (opcCallback::*function)(const char *itemID, const opcOperation opcOP, const float value))
+void OPC::addItem(const char *itemID, opcAccessRights opcAccessRight, opctypes opctype,  float (*function)(const char *itemID, const opcOperation opcOP, const float value))
 {
   internaladdItem(itemID, opcAccessRight, opctype, int(&function));
 }
@@ -90,10 +91,10 @@ void OPCSerial::sendOPCItemsMap()
 
   str+=String(">");
   verboseControl->debugMsg("OPCItems Map: "+str);
-  commControl->SerialWriteS(*commID,str);
+  commControl->SerialWriteS(commID,str);
 }
 
-OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int *ID) : OPC(vc)  {
+OPCSerial::OPCSerial(VerboseControl *vc, CommControl *cc, int ID) : OPC(vc)  {
   buffer[0] = '\0';
   commControl=cc;
   commID=ID;
@@ -108,8 +109,8 @@ void OPCSerial::processOPCCommands() {
   int (*int_callback)(const char *itemID, const opcOperation opcOP, const int value);
   float (*float_callback)(const char *itemID, const opcOperation opcOP, const float value);
 
-  while (commControl->getCommStatus(*commID)) {
-    char inChar = commControl->SerialReadB(*commID);
+  while (commControl->getCommStatus(commID)) {
+    char inChar = commControl->SerialReadB(commID);
     verboseControl->debugMsg("OPC inChar: "+String(inChar));
     if (inChar == '\r') {
       //verboseControl->debugMsg("OPC Buffer: "+String(buffer[0]));
@@ -141,25 +142,25 @@ void OPCSerial::processOPCCommands() {
                       bool_callback = (bool (*)(const char *itemID, const opcOperation opcOP, const bool value))(OPCItemList[i].ptr_callback);
                       cb = String(bool_callback(OPCItemList[i].itemID,opc_opread,NULL));
                       verboseControl->debugMsg(cb);
-                      commControl->SerialWriteS(*commID,cb);
+                      commControl->SerialWriteS(commID,cb);
                       break;
             case opc_byte :
                       byte_callback = (byte (*)(const char *itemID, const opcOperation opcOP, const byte value))(OPCItemList[i].ptr_callback);
                       cb = String(byte_callback(OPCItemList[i].itemID,opc_opread,NULL));
                       verboseControl->debugMsg(cb);
-                      commControl->SerialWriteS(*commID,cb);
+                      commControl->SerialWriteS(commID,cb);
                       break;
             case opc_int :
                       int_callback = (int (*)(const char *itemID, const opcOperation opcOP, const int value))(OPCItemList[i].ptr_callback);
                       cb = String(int_callback(OPCItemList[i].itemID,opc_opread,NULL));
                       verboseControl->debugMsg(cb);
-                      commControl->SerialWriteS(*commID,cb);
+                      commControl->SerialWriteS(commID,cb);
                       break;
             case opc_float :
                       float_callback = (float (*)(const char *itemID, const opcOperation opcOP, const float value))(OPCItemList[i].ptr_callback);
                       cb = String(float_callback(OPCItemList[i].itemID,opc_opread,NULL));
                       verboseControl->debugMsg(cb);
-                      commControl->SerialWriteS(*commID,cb);
+                      commControl->SerialWriteS(commID,cb);
                       break;
           }
 

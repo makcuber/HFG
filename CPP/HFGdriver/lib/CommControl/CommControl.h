@@ -33,6 +33,7 @@
 #define MAX_COMMS 4
 #define MAX_BAUD 6
 #define SERIAL_BUFFER 128
+#define OPC_CHANNEL 0
 
 enum channelType{
   usbChannel,
