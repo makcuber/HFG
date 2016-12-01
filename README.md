@@ -19,7 +19,7 @@ Instructor: Tom Wanyama
 
 Team Members:
 
-Jonathan Brunath - Chief of Software: 
+Jonathan Brunath - Chief of Software
 
 Mike Blaine - Chief of Hardware
 
